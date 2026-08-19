@@ -2,7 +2,7 @@
 
 ![The Speedcuber Timer logo. A green cube fading into view as it climbs
 into the light](./icon.svg)
-# Speedcuber Timer
+# Zaid Speedcuber Timer
 
 The smart, offline-ready speedcubing app made for speedcubers, by speedcubers.
 
