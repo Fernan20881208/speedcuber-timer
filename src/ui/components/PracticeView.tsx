@@ -14,6 +14,10 @@ import PuzzleRegistry, {
 } from './smartpuzzles/SmartPuzzleRegistry';
 import { StyleSheet, View } from 'react-native';
 import {
+  startHaptic,
+  stopHaptic,
+} from '../../features/haptics/haptics';
+import {
   useAttemptCreator,
   useSolveRecordingCreator,
 } from '../../persistence/hooks';
@@ -113,14 +117,22 @@ export default function PracticeView() {
       persistAttempt(attempt);
       setTimerState(TimerState.SCRAMBLING);
     } else {
-      nextTimerState();
+  startHaptic();
+
+  nextTimerState();
     }
-  }
 
   function handleSolveComplete() {
-    const attempt = assembleAttempt();
-    persistAttempt(attempt);
-    nextTimerState();
+  const attempt =
+    assembleAttempt();
+
+  stopHaptic();
+
+  persistAttempt(
+    attempt,
+  );
+
+  nextTimerState();
   }
 
   function assembleAttempt() {
