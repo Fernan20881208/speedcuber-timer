@@ -8,6 +8,9 @@ import { Milliseconds } from '../../../lib/stif';
 import { Pressable, StyleSheet, Vibration } from 'react-native';
 import { useState } from 'react';
 
+import {
+  readyHaptic,
+} from '../../../features/haptics/haptics';
 import { Button } from 'react-native-paper';
 import { Inspection } from '../../../lib/constants';
 import InspectionTime from './InspectionTime';
@@ -47,9 +50,11 @@ export default function InspectionTimer({
   }
 
   function handleLongPress() {
-    if (timer.isRunning()) {
-      setReady(true);
-    }
+  if (timer.isRunning()) {
+    setReady(true);
+
+    readyHaptic();
+  }
   }
 
   function handlePressOut() {
