@@ -17,6 +17,7 @@ import { STIF } from '../../lib/stif';
 export type RootDrawerParamList = {
   Practice: undefined;
   Appearance: undefined;
+  Training: undefined;
   Learn: undefined;
   Play: undefined;
   Backup: undefined;
