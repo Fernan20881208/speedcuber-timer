@@ -4,13 +4,27 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { StyleSheet, View } from 'react-native';
+import {
+  StyleSheet,
+  View,
+} from 'react-native';
 
-import { Inspection } from '../../../lib/constants';
-import { Text } from 'react-native-paper';
-import { getCurrentTheme } from '../../themes';
-import { useTranslation } from 'react-i18next';
-import { Milliseconds } from '../../../lib/stif';
+import {
+  Text,
+  useTheme,
+} from 'react-native-paper';
+
+import {
+  useTranslation,
+} from 'react-i18next';
+
+import {
+  Inspection,
+} from '../../../lib/constants';
+
+import {
+  Milliseconds,
+} from '../../../lib/stif';
 
 interface InspectionTimeProps {
   elapsed: Milliseconds;
@@ -25,66 +39,138 @@ function formatTimeToShow(
   overtimeUntilDnf: Milliseconds,
 ): string {
   if (remaining >= 0) {
-    return Math.ceil(remaining / 1000).toString();
-  } else if (Math.abs(remaining) <= overtimeUntilDnf) {
-    return '+2';
-  } else {
-    return 'DNF';
+    return Math.ceil(
+      remaining / 1000,
+    ).toString();
   }
+
+  if (
+    Math.abs(remaining) <=
+    overtimeUntilDnf
+  ) {
+    return '+2';
+  }
+
+  return 'DNF';
 }
 
 export default function InspectionTime({
   elapsed,
   ready = false,
-  inspectionDuration = Inspection.DEFAULT_DURATION_MILLIS,
-  stackmatDelay = Inspection.DEFAULT_STACKMAT_DELAY_MILLIS,
-  overtimeUntilDnf = Inspection.DEFAULT_OVERTIME_UNTIL_DNF_MILLIS,
+  inspectionDuration =
+    Inspection.DEFAULT_DURATION_MILLIS,
+  stackmatDelay =
+    Inspection.DEFAULT_STACKMAT_DELAY_MILLIS,
+  overtimeUntilDnf =
+    Inspection.DEFAULT_OVERTIME_UNTIL_DNF_MILLIS,
 }: InspectionTimeProps) {
-  const { t } = useTranslation();
-  let textStyle: any[] = [styles.timer];
+  const {
+    t,
+  } = useTranslation();
 
-  const remaining: Milliseconds = inspectionDuration - elapsed;
-  const isAlmostDone = remaining <= stackmatDelay * 6;
+  const theme =
+    useTheme();
+
+  const remaining:
+    Milliseconds =
+    inspectionDuration -
+    elapsed;
+
+  const isAlmostDone =
+    remaining <=
+    stackmatDelay * 6;
+
+  const textStyle: any[] = [
+    styles.timer,
+
+    {
+      color:
+        theme.colors
+          .onPrimaryContainer,
+    },
+  ];
 
   if (isAlmostDone) {
-    textStyle.push(styles.almostDone);
+    textStyle.push(
+      styles.almostDone,
+
+      {
+        color:
+          theme.colors.error,
+      },
+    );
   }
+
   if (ready) {
-    textStyle.push(styles.ready);
+    textStyle.push(
+      styles.ready,
+
+      {
+        color:
+          theme.colors.secondary,
+      },
+    );
   }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.inspection}>{`${t(
-        'inspection',
-      ).toLocaleUpperCase()}:`}</Text>
-      <Text style={textStyle}>
-        {formatTimeToShow(remaining, overtimeUntilDnf)}
+    <View
+      style={
+        styles.container
+      }>
+      <Text
+        style={
+          styles.inspection
+        }>
+        {`${t(
+          'inspection',
+        ).toLocaleUpperCase()}:`}
+      </Text>
+
+      <Text
+        style={
+          textStyle
+        }>
+        {formatTimeToShow(
+          remaining,
+          overtimeUntilDnf,
+        )}
       </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  inspection: {
-    fontSize: 16,
-    paddingBottom: 10,
-  },
-  timer: {
-    fontSize: 80,
-    fontVariant: ['tabular-nums'],
-    color: getCurrentTheme().colors.onPrimaryContainer,
-  },
-  almostDone: {
-    fontSize: 80,
-    color: getCurrentTheme().colors.error,
-  },
-  ready: {
-    fontSize: 100,
-    color: getCurrentTheme().colors.secondary,
-  },
-});
+const styles =
+  StyleSheet.create({
+    container: {
+      justifyContent:
+        'center',
+
+      alignItems:
+        'center',
+
+      width:
+        '100%',
+    },
+
+    inspection: {
+      fontSize: 16,
+
+      paddingBottom: 10,
+    },
+
+    timer: {
+      fontSize: 80,
+
+      fontVariant: [
+        'tabular-nums',
+      ],
+    },
+
+    almostDone: {
+      fontSize: 80,
+    },
+
+    ready: {
+      fontSize: 100,
+    },
+  });
