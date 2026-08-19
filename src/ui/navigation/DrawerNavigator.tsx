@@ -9,6 +9,8 @@ import * as React from 'react';
 import BackupScreen from '../screens/BackupScreen';
 import ExamplesNavigator from '../examples/ExamplesNavigator';
 import FileSystemStackNavigator from '../components/filesystem/FileSystemStackNavigator';
+import AppearanceScreen
+  from '../screens/AppearanceScreen';
 import PlayScreen from '../screens/PlayScreen';
 import PracticeNavigator from './PracticeNavigator';
 import { RootDrawerParamList } from './types';
@@ -29,6 +31,13 @@ const DrawerNavigator: React.FC = () => {
           drawerLabel: t('backup.drawerLabel'),
         }}
       />
+      <Drawer.Screen
+  name="Appearance"
+  component={AppearanceScreen}
+  options={{
+    drawerLabel: 'Apariencia',
+  }}
+/>
       {__DEV__ && (
         <>
           <Drawer.Screen
