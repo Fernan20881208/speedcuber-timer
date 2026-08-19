@@ -6,6 +6,8 @@
 
 import * as React from 'react';
 
+import TrainingScreen
+  from '../screens/TrainingScreen';
 import BackupScreen from '../screens/BackupScreen';
 import ExamplesNavigator from '../examples/ExamplesNavigator';
 import FileSystemStackNavigator from '../components/filesystem/FileSystemStackNavigator';
@@ -22,6 +24,14 @@ const Drawer = createDrawerNavigator<RootDrawerParamList>();
 const DrawerNavigator: React.FC = () => {
   const { t } = useTranslation();
   return (
+    <Drawer.Screen
+  name="Training"
+  component={TrainingScreen}
+  options={{
+    drawerLabel:
+      'Entrenamiento',
+  }}
+/>
     <Drawer.Navigator id="Root" screenOptions={{ headerShown: false }}>
       <Drawer.Screen name="Practice" component={PracticeNavigator} />
       <Drawer.Screen
