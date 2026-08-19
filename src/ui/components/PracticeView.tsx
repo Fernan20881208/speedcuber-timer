@@ -358,12 +358,22 @@ export default function PracticeView() {
 );
 
 const styles = StyleSheet.create({
+  timerArea: {
+  flex: 1,
+
+  width: '100%',
+
+  justifyContent:
+    'center',
+
+  alignItems:
+    'center',
+},
   container: {
-    flex: 1,
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  flex: 1,
+
+  width: '100%',
+},
   landing: {
     flex: 1,
     width: '100%',
