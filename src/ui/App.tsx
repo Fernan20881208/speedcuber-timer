@@ -1,6 +1,9 @@
 import 'react-native-get-random-values';
 
 import {
+  TrainingProvider,
+} from '../features/training/TrainingContext';
+import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 
@@ -55,11 +58,13 @@ const ThemedApp = () => {
     <PaperProvider
       theme={theme}>
       <RealmProvider>
-        {__DEV__ &&
-          <DevComponents />}
+  <TrainingProvider>
+    {__DEV__ &&
+      <DevComponents />}
 
-        <MainNavigator />
-      </RealmProvider>
+    <MainNavigator />
+  </TrainingProvider>
+</RealmProvider>
     </PaperProvider>
   );
 };
