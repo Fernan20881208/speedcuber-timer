@@ -9,6 +9,9 @@ import {
   MessageStreamBuilder,
   SolutionBuilder,
 } from '../../lib/stif/builders';
+import {
+  useTraining,
+} from '../../features/training/TrainingContext';
 import PuzzleRegistry, {
   MessageSubscription,
 } from './smartpuzzles/SmartPuzzleRegistry';
@@ -71,6 +74,9 @@ function emptyAttemptForEvent(event: STIF.CompetitiveEvent): Attempt {
 }
 
 export default function PracticeView() {
+  const {
+  recordAttempt,
+} = useTraining();
   const createAttempt = useAttemptCreator();
   const createRecording = useSolveRecordingCreator();
   const [event] = useCompetitiveEvent();
@@ -274,6 +280,9 @@ export default function PracticeView() {
 
   function persistAttempt(attempt: STIF.Attempt) {
     createAttempt(attempt);
+    void recordAttempt(
+  attempt.id,
+);
     setLastAttempt(new Attempt(attempt));
     wipSolutions.map((wip, idx) => {
       const recording = wip.messages?.build();
