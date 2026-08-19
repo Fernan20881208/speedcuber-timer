@@ -295,37 +295,67 @@ export default function PracticeView() {
   }
 
   return (
-    <View style={styles.container}>
-      {(timerState === TimerState.SCRAMBLING && (
+  <View
+    style={
+      styles.container
+    }>
+
+    <TrainingStatusBar />
+
+    <View
+      style={
+        styles.timerArea
+      }>
+
+      {(timerState ===
+        TimerState.SCRAMBLING && (
         <ScramblingView
-          previousAttempt={lastAttempt.stif()}
-          onPress={handleInspectionBegin}
+          previousAttempt={
+            lastAttempt.stif()
+          }
+          onPress={
+            handleInspectionBegin
+          }
         />
       )) ||
-        (timerState === TimerState.INSPECTION && (
+
+        (timerState ===
+          TimerState.INSPECTION && (
           <InspectionTimer
-            onInspectionComplete={handleInspectionComplete}
+            onInspectionComplete={
+              handleInspectionComplete
+            }
             onCancel={() => {
-              setTimerState(TimerState.SCRAMBLING);
+              setTimerState(
+                TimerState.SCRAMBLING,
+              );
             }}
           />
         )) ||
-        (timerState === TimerState.SOLVING && (
-          <SolveTimer onStopTimer={handleSolveComplete} />
+
+        (timerState ===
+          TimerState.SOLVING && (
+          <SolveTimer
+            onStopTimer={
+              handleSolveComplete
+            }
+          />
         ))}
-      {newPB && (
-  <PBOverlay
-    timeMs={
-      newPB.timeMs
-    }
-    improvementMs={
-      newPB.improvementMs
-    }
-  />
-)}
     </View>
-  );
-}
+
+    {newPB && (
+      <PBOverlay
+        timeMs={
+          newPB.timeMs
+        }
+        improvementMs={
+          newPB.improvementMs
+        }
+      />
+    )}
+
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
