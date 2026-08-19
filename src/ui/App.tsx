@@ -1,3 +1,6 @@
+import {
+  FavoritesProvider,
+} from '../features/favorites/FavoritesContext';
 import 'react-native-get-random-values';
 
 import {
@@ -58,12 +61,16 @@ const ThemedApp = () => {
     <PaperProvider
       theme={theme}>
       <RealmProvider>
-  <TrainingProvider>
-    {__DEV__ &&
-      <DevComponents />}
+  <FavoritesProvider>
+    <TrainingProvider>
 
-    <MainNavigator />
-  </TrainingProvider>
+      {__DEV__ &&
+        <DevComponents />}
+
+      <MainNavigator />
+
+    </TrainingProvider>
+  </FavoritesProvider>
 </RealmProvider>
     </PaperProvider>
   );
