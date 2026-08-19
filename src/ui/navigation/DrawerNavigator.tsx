@@ -18,15 +18,6 @@ import {
 import BackupScreen
   from '../screens/BackupScreen';
 
-import ExamplesNavigator
-  from '../examples/ExamplesNavigator';
-
-import FileSystemStackNavigator
-  from '../components/filesystem/FileSystemStackNavigator';
-
-import PlayScreen
-  from '../screens/PlayScreen';
-
 import PracticeNavigator
   from './PracticeNavigator';
 
@@ -45,6 +36,38 @@ const Drawer =
     RootDrawerParamList
   >();
 
+/*
+ * IMPORTANTE:
+ *
+ * No importamos las pantallas DEV
+ * estáticamente.
+ *
+ * En Release no deben inicializarse
+ * ni cargar todos los archivos
+ * *.examples.tsx.
+ */
+
+const ExamplesNavigator =
+  __DEV__
+    ? require(
+        '../examples/ExamplesNavigator',
+      ).default
+    : null;
+
+const PlayScreen =
+  __DEV__
+    ? require(
+        '../screens/PlayScreen',
+      ).default
+    : null;
+
+const FileSystemStackNavigator =
+  __DEV__
+    ? require(
+        '../components/filesystem/FileSystemStackNavigator',
+      ).default
+    : null;
+
 const DrawerNavigator:
   React.FC = () => {
   const {
@@ -55,12 +78,15 @@ const DrawerNavigator:
   return (
     <Drawer.Navigator
       id="Root"
+
       screenOptions={{
         headerShown:
           false,
       }}>
+
       <Drawer.Screen
         name="Practice"
+
         component={
           PracticeNavigator
         }
@@ -68,9 +94,11 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Training"
+
         component={
           TrainingScreen
         }
+
         options={{
           drawerLabel:
             'Entrenamiento',
@@ -79,9 +107,11 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Appearance"
+
         component={
           AppearanceScreen
         }
+
         options={{
           drawerLabel:
             'Apariencia',
@@ -90,9 +120,11 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Backup"
+
         component={
           BackupScreen
         }
+
         options={{
           drawerLabel:
             t(
@@ -101,42 +133,51 @@ const DrawerNavigator:
         }}
       />
 
-      {__DEV__ && (
-        <>
-          <Drawer.Screen
-            name="Examples"
-            component={
-              ExamplesNavigator
-            }
-            options={{
-              drawerLabel:
-                'Dev Examples',
-            }}
-          />
+      {__DEV__ &&
+        ExamplesNavigator &&
+        PlayScreen &&
+        FileSystemStackNavigator && (
+          <>
+            <Drawer.Screen
+              name="Examples"
 
-          <Drawer.Screen
-            name="Play"
-            component={
-              PlayScreen
-            }
-            options={{
-              drawerLabel:
-                'Dev Playground',
-            }}
-          />
+              component={
+                ExamplesNavigator
+              }
 
-          <Drawer.Screen
-            name="FileSystemStack"
-            component={
-              FileSystemStackNavigator
-            }
-            options={{
-              drawerLabel:
-                'File System',
-            }}
-          />
-        </>
-      )}
+              options={{
+                drawerLabel:
+                  'Dev Examples',
+              }}
+            />
+
+            <Drawer.Screen
+              name="Play"
+
+              component={
+                PlayScreen
+              }
+
+              options={{
+                drawerLabel:
+                  'Dev Playground',
+              }}
+            />
+
+            <Drawer.Screen
+              name="FileSystemStack"
+
+              component={
+                FileSystemStackNavigator
+              }
+
+              options={{
+                drawerLabel:
+                  'File System',
+              }}
+            />
+          </>
+        )}
     </Drawer.Navigator>
   );
 };
