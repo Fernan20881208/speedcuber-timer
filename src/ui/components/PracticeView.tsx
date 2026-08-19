@@ -12,6 +12,8 @@ import {
 import {
   useTraining,
 } from '../../features/training/TrainingContext';
+import TrainingStatusBar
+  from './zaid/TrainingStatusBar';
 import PuzzleRegistry, {
   MessageSubscription,
 } from './smartpuzzles/SmartPuzzleRegistry';
