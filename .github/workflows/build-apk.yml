@@ -109,7 +109,7 @@ jobs:
       # Release incluye el bundle JS.
       # Limito a arm64-v8a para teléfonos Android modernos.
       - name: Build standalone Release APK
-            - name: Collect React Native crash symbols
+      - name: Collect React Native crash symbols
         if: always()
         shell: bash
         run: |
