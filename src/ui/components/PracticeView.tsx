@@ -19,10 +19,19 @@ import {
 } from '../../features/haptics/haptics';
 import {
   useAttemptCreator,
+  useAttempts,
   useSolveRecordingCreator,
 } from '../../persistence/hooks';
 import { useEffect, useState } from 'react';
 
+import PBOverlay
+  from './zaid/PBOverlay';
+
+import {
+  pbHaptic,
+  startHaptic,
+  stopHaptic,
+} from '../../features/haptics/haptics';
 import { Attempt } from '../../lib/stif/wrappers';
 import { GeneratedScramble } from './scrambles/types';
 import InspectionTimer from './inspection/InspectionTimer';
@@ -65,6 +74,12 @@ export default function PracticeView() {
   const createAttempt = useAttemptCreator();
   const createRecording = useSolveRecordingCreator();
   const [event] = useCompetitiveEvent();
+  const attempts =
+  useAttempts({
+    event,
+    sortDirection:
+      'ascending',
+  });
   const [inspectionStart, setInspectionStart] = useState(0);
   const [timerStart, setTimerStart] = useState(0);
   const [timerState, setTimerState] = useState(TimerState.SCRAMBLING);
@@ -122,19 +137,113 @@ export default function PracticeView() {
   nextTimerState();
     }
 
-  function handleSolveComplete() {
+      function getPreviousPB():
+  number | null {
+  let best:
+    number | null =
+    null;
+
+  for (
+    let index = 0;
+    index < attempts.length;
+    index++
+  ) {
+    const attempt =
+      new Attempt(
+        attempts[index],
+      );
+
+    const result =
+      attempt.result();
+
+    if (
+      typeof result !==
+        'number' ||
+      !Number.isFinite(
+        result,
+      )
+    ) {
+      continue;
+    }
+
+    if (
+      best === null ||
+      result < best
+    ) {
+      best = result;
+    }
+  }
+
+  return best;
+}
+
+    function detectPB(
+  attempt:
+    STIF.Attempt,
+) {
+  const wrappedAttempt =
+    new Attempt(
+      attempt,
+    );
+
+  const result =
+    wrappedAttempt.result();
+
+  if (
+    typeof result !==
+      'number' ||
+    !Number.isFinite(
+      result,
+    )
+  ) {
+    return;
+  }
+
+  const previousPB =
+    getPreviousPB();
+
+  const isPB =
+    previousPB === null ||
+    result < previousPB;
+
+  if (!isPB) {
+    return;
+  }
+
+  const improvement =
+    previousPB === null
+      ? null
+      : previousPB -
+        result;
+
+  setNewPB({
+    timeMs: result,
+    improvementMs:
+      improvement,
+  });
+
+  pbHaptic();
+
+  setTimeout(() => {
+    setNewPB(null);
+  }, 2500);
+}
+    function handleSolveComplete() {
   const attempt =
     assembleAttempt();
 
   stopHaptic();
+
+  detectPB(
+    attempt,
+  );
 
   persistAttempt(
     attempt,
   );
 
   nextTimerState();
-  }
-
+    }
   function assembleAttempt() {
     const now = new Date().getTime();
     const didNotStart = timerStart < inspectionStart;
@@ -193,6 +302,16 @@ export default function PracticeView() {
         (timerState === TimerState.SOLVING && (
           <SolveTimer onStopTimer={handleSolveComplete} />
         ))}
+      {newPB && (
+  <PBOverlay
+    timeMs={
+      newPB.timeMs
+    }
+    improvementMs={
+      newPB.improvementMs
+    }
+  />
+)}
     </View>
   );
 }
