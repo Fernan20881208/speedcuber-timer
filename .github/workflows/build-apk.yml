@@ -108,56 +108,7 @@ jobs:
 
       # Release incluye el bundle JS.
       # Limito a arm64-v8a para teléfonos Android modernos.
-      - name: Build standalone Release APK
-      - name: Collect React Native crash symbols
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p output/js-symbols
-
-          echo "Git commit:"
-          git rev-parse HEAD | tee output/js-symbols/git-commit.txt
-
-          echo
-          echo "Searching generated bundles and source maps..."
-
-          find android/app/build \
-            -type f \
-            \( \
-              -name "*.map" \
-              -o -name "index.android.bundle" \
-            \) \
-            -print
-
-          while IFS= read -r FILE; do
-            REL="${FILE#android/app/build/}"
-
-            mkdir -p \
-              "output/js-symbols/$(dirname "$REL")"
-
-            cp "$FILE" \
-              "output/js-symbols/$REL"
-          done < <(
-            find android/app/build \
-              -type f \
-              \( \
-                -name "*.map" \
-                -o -name "index.android.bundle" \
-              \)
-          )
-
-          echo
-          echo "Collected files:"
-          find output/js-symbols -type f -print
-
-      - name: Upload React Native crash symbols
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Zaid-Speedcube-JS-Symbols
-          path: output/js-symbols
-          if-no-files-found: warn
-          retention-days: 30
+       - name: Build standalone Release APK
         working-directory: android
         env:
           ANDROID_RELEASE_KEYSTORE_FILE_PATH: ${{ runner.temp }}/speedcuber-release.keystore
@@ -171,31 +122,96 @@ jobs:
             --no-daemon \
             --stacktrace
 
+      - name: Collect React Native crash symbols
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p output/js-symbols
+
+          echo "Git commit:"
+          git rev-parse HEAD | tee output/js-symbols/git-commit.txt
+
+          echo
+          echo "Searching generated React Native bundles and source maps..."
+
+          find android/app/build \
+            -type f \
+            \( \
+              -name "*.map" \
+              -o -name "index.android.bundle" \
+            \) \
+            -print || true
+
+          while IFS= read -r FILE; do
+            [ -z "$FILE" ] && continue
+
+            REL="${FILE#android/app/build/}"
+
+            mkdir -p "output/js-symbols/$(dirname "$REL")"
+
+            cp "$FILE" "output/js-symbols/$REL"
+          done < <(
+            find android/app/build \
+              -type f \
+              \( \
+                -name "*.map" \
+                -o -name "index.android.bundle" \
+              \) 2>/dev/null
+          )
+
+          echo
+          echo "Collected files:"
+          find output/js-symbols -type f -print || true
+
+      - name: Upload React Native crash symbols
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaid-Speedcube-JS-Symbols
+          path: output/js-symbols
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Find generated APK
+        if: success()
         run: |
           echo "Generated APK files:"
-          find android/app/build/outputs -type f -name "*.apk" -print
+          find android/app/build/outputs \
+            -type f \
+            -name "*.apk" \
+            -print
 
       - name: Copy APK
+        if: success()
+        shell: bash
         run: |
-          APK="$(find android/app/build/outputs/apk/release -type f -name "*.apk" | head -n 1)"
+          APK="$(find android/app/build/outputs/apk/release \
+            -type f \
+            -name "*.apk" \
+            | head -n 1)"
 
           if [ -z "$APK" ]; then
             echo "ERROR: Release APK was not generated"
             exit 1
           fi
 
-          echo "APK=$APK"
+          echo "APK found:"
+          echo "$APK"
 
           mkdir -p output
-          cp "$APK" output/Speedcuber-Timer-v0.2.4-arm64.apk
 
-          ls -lh output/
+          cp "$APK" \
+            output/Zaid-Speedcube-Timer.apk
+
+          echo
+          echo "Final APK:"
+          ls -lh output/Zaid-Speedcube-Timer.apk
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: Speedcuber-Timer-Release-APK
-          path: output/Speedcuber-Timer-v0.2.4-arm64.apk
+          name: Zaid-Speedcube-Timer-Release-APK
+          path: output/Zaid-Speedcube-Timer.apk
           if-no-files-found: error
           retention-days: 30
