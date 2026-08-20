@@ -1,246 +1,47 @@
-apply plugin: "com.android.application"
-apply plugin: "com.facebook.react"
-apply from: './versionCode.gradle'
-apply from: './versionName.gradle'
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+// Top-level build file where you can add configuration options
+// common to all sub-projects/modules.
 
-import com.android.build.OutputFile
-import org.apache.tools.ant.taskdefs.condition.Os
+buildscript {
+    ext {
+        buildToolsVersion = "33.0.0"
 
-/**
- * This is the configuration block to customize your React Native Android app.
- * By default you don't need to apply any configuration, just uncomment the lines you need.
- */
-react {
-    /* Folders */
-    //   The root of your project, i.e. where "package.json" lives. Default is '..'
-    // root = file("../")
-    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    // reactNativeDir = file("../node_modules/react-native")
-    //   The folder where the React Native Codegen package is. Default is ../node_modules/react-native-codegen
-    // codegenDir = file("../node_modules/react-native-codegen")
-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    // cliFile = file("../node_modules/react-native/cli.js")
+        // Liquid Glass requiere Android 7.0+
+        minSdkVersion = 24
 
-    /* Variants */
-    // debuggableVariants = ["liteDebug", "prodDebug"]
+        // Conservamos el toolchain original de React Native 0.71
+        compileSdkVersion = 33
+        targetSdkVersion = 33
 
-    /* Bundling */
-    // nodeExecutableAndArgs = ["node"]
-    // bundleCommand = "ram-bundle"
-    // bundleConfig = file(../rn-cli.config.js)
-    // bundleAssetName = "MyApplication.android.bundle"
-    // entryFile = file("../js/MyApplication.android.js")
-    // extraPackagerArgs = []
-
-    /* Hermes Commands */
-    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
-    // hermesFlags = ["-O", "-output-source-map"]
-}
-
-/**
- * Set this to true to create four separate APKs instead of one.
- */
-def enableSeparateBuildPerCPUArchitecture = false
-
-/**
- * Set this to true to Run Proguard on Release builds.
- */
-def enableProguardInReleaseBuilds = false
-
-/**
- * Preferred JavaScriptCore flavor.
- */
-def jscFlavor = 'org.webkit:android-jsc-intl:+'
-
-/**
- * Native architectures.
- */
-def reactNativeArchitectures() {
-    def value = project.getProperties().get("reactNativeArchitectures")
-
-    return value
-        ? value.split(",")
-        : [
-            "armeabi-v7a",
-            "x86",
-            "x86_64",
-            "arm64-v8a"
-        ]
-}
-
-android {
-    ndkVersion rootProject.ext.ndkVersion
-
-    compileSdkVersion rootProject.ext.compileSdkVersion
-
-    namespace "org.speedcuber.timer"
-
-    defaultConfig {
-        applicationId "org.speedcuber.timer"
-
-        minSdkVersion rootProject.ext.minSdkVersion
-
-        targetSdkVersion rootProject.ext.targetSdkVersion
-
-        versionCode Integer.parseInt(VERSION_CODE)
-
-        versionName VERSION_NAME
+        // Conservamos el NDK original de Speedcuber Timer.
+        // Liquid Glass viene como AAR ya compilado.
+        ndkVersion = "23.1.7779620"
     }
 
-    splits {
-        abi {
-            reset()
-
-            enable enableSeparateBuildPerCPUArchitecture
-
-            universalApk false
-
-            include (*reactNativeArchitectures())
-        }
+    repositories {
+        google()
+        mavenCentral()
     }
 
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-
-            storePassword 'android'
-
-            keyAlias 'androiddebugkey'
-
-            keyPassword 'android'
-        }
-
-        release {
-            def keystorePath =
-                System.getenv(
-                    "ANDROID_RELEASE_KEYSTORE_FILE_PATH"
-                )
-
-            if (
-                keystorePath != null &&
-                keystorePath.length() > 0
-            ) {
-                storeFile file(
-                    System.getenv(
-                        "ANDROID_RELEASE_KEYSTORE_FILE_PATH"
-                    )
-                )
-
-                storePassword System.getenv(
-                    "ANDROID_RELEASE_KEYSTORE_PASSWORD"
-                )
-
-                keyAlias System.getenv(
-                    "ANDROID_RELEASE_KEY_ALIAS"
-                )
-
-                keyPassword System.getenv(
-                    "ANDROID_RELEASE_KEY_PASSWORD"
-                )
-            }
-        }
-    }
-
-    buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
-
-        release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-
-            signingConfig signingConfigs.release
-
-            minifyEnabled enableProguardInReleaseBuilds
-
-            proguardFiles(
-                getDefaultProguardFile(
-                    "proguard-android.txt"
-                ),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-
-            def versionCodes = [
-                "armeabi-v7a": 1,
-                "x86": 2,
-                "arm64-v8a": 3,
-                "x86_64": 4
-            ]
-
-            def abi =
-                output.getFilter(
-                    OutputFile.ABI
-                )
-
-            if (abi != null) {
-                output.versionCodeOverride =
-                    defaultConfig.versionCode * 1000 +
-                    versionCodes.get(abi)
-            }
-        }
-    }
-}
-
-dependencies {
-    // React Native
-    implementation(
-        "com.facebook.react:react-android"
-    )
-
-    // Liquid Glass Android
-    implementation(
-        "com.github.QWEA0:liquidglass:v2.0.2"
-    )
-
-    // AndroidX
-    implementation(
-        "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    )
-
-    implementation(
-        "androidx.core:core-splashscreen:1.0.0"
-    )
-
-    // Flipper - Debug only
-    debugImplementation(
-        "com.facebook.flipper:flipper:${FLIPPER_VERSION}"
-    )
-
-    debugImplementation(
-        "com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}"
-    ) {
-        exclude group: 'com.squareup.okhttp3',
-                module: 'okhttp'
-    }
-
-    debugImplementation(
-        "com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}"
-    )
-
-    // Hermes / JSC
-    if (
-        hermesEnabled.toBoolean()
-    ) {
-        implementation(
-            "com.facebook.react:hermes-android"
+    dependencies {
+        classpath(
+            "com.android.tools.build:gradle:7.3.1"
         )
-    } else {
-        implementation jscFlavor
+
+        classpath(
+            "com.facebook.react:react-native-gradle-plugin"
+        )
     }
 }
 
-apply from:
-    file(
-        "../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"
-    )
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
 
-applyNativeModulesAppBuildGradle(
-    project
-)
+        // Necesario para:
+        // com.github.QWEA0:liquidglass:v2.0.2
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+}
