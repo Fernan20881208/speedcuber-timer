@@ -9,7 +9,6 @@ import {
 
 import {
   Button,
-  Surface,
   Text,
   TextInput,
 } from 'react-native-paper';
@@ -17,6 +16,8 @@ import {
 import {
   useTraining,
 } from '../../features/training/TrainingContext';
+
+import ZaidSurface from '../components/zaid/ZaidSurface';
 
 export default function TrainingScreen() {
   const {
@@ -56,8 +57,11 @@ export default function TrainingScreen() {
           Sesión activa
         </Text>
 
-        <Surface
-          style={styles.card}>
+        <ZaidSurface
+          style={styles.card}
+          cornerRadius={24}
+          refractionHeight={58}
+          dispersionStrength={0.11}>
           <Text
             variant="titleLarge">
             {
@@ -84,7 +88,7 @@ export default function TrainingScreen() {
               ? ` / ${activeSession.targetSolves}`
               : ''}
           </Text>
-        </Surface>
+        </ZaidSurface>
 
         <Button
           mode="contained"
@@ -131,38 +135,44 @@ export default function TrainingScreen() {
         Nueva sesión
       </Text>
 
-      <TextInput
-        label="Nombre"
-        value={name}
-        onChangeText={
-          setName
-        }
-        style={styles.input}
-      />
+      <ZaidSurface
+        style={styles.formCard}
+        cornerRadius={26}
+        refractionHeight={58}
+        dispersionStrength={0.10}>
+        <TextInput
+          label="Nombre"
+          value={name}
+          onChangeText={
+            setName
+          }
+          style={styles.input}
+        />
 
-      <TextInput
-        label="Objetivo en segundos"
-        value={
-          targetSeconds
-        }
-        onChangeText={
-          setTargetSeconds
-        }
-        keyboardType="decimal-pad"
-        style={styles.input}
-      />
+        <TextInput
+          label="Objetivo en segundos"
+          value={
+            targetSeconds
+          }
+          onChangeText={
+            setTargetSeconds
+          }
+          keyboardType="decimal-pad"
+          style={styles.input}
+        />
 
-      <TextInput
-        label="Cantidad de solves"
-        value={
-          targetSolves
-        }
-        onChangeText={
-          setTargetSolves
-        }
-        keyboardType="number-pad"
-        style={styles.input}
-      />
+        <TextInput
+          label="Cantidad de solves"
+          value={
+            targetSolves
+          }
+          onChangeText={
+            setTargetSolves
+          }
+          keyboardType="number-pad"
+          style={styles.input}
+        />
+      </ZaidSurface>
 
       <Button
         mode="contained"
@@ -198,11 +208,18 @@ const styles =
 
     input: {
       marginTop: 4,
+      backgroundColor: 'transparent',
     },
 
     card: {
       padding: 20,
-      borderRadius: 20,
+      borderRadius: 24,
       gap: 8,
+    },
+
+    formCard: {
+      padding: 16,
+      borderRadius: 26,
+      gap: 10,
     },
   });
