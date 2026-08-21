@@ -8,8 +8,10 @@ buildscript {
         // Liquid Glass requires Android 7.0+
         minSdkVersion = 24
 
-        // Liquid Glass v2.0.2 is compiled against API 36.
-        compileSdkVersion = 36
+        // AndroidX Core 1.13.1 brought by Liquid Glass requires API 34+.
+        // Use the minimum compatible compile SDK to stay as close as possible
+        // to the React Native 0.71 / AGP 7.3.1 toolchain.
+        compileSdkVersion = 34
 
         // Keep the original runtime target behavior for now.
         targetSdkVersion = 33
