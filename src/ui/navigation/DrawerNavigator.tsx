@@ -95,14 +95,6 @@ const DrawerNavigator:
         headerShown:
           false,
 
-        sceneContainerStyle:
-          useGlass
-            ? {
-                backgroundColor:
-                  'transparent',
-              }
-            : undefined,
-
         drawerStyle:
           useGlass
             ? {
