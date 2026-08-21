@@ -54,25 +54,28 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
             --version
 
-      - name: Install required Android SDK components
+            - name: Install required Android SDK components
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
           "$SDKMANAGER" \
             "platform-tools" \
+            "platforms;android-36" \
             "platforms;android-33" \
             "build-tools;33.0.0" \
             "ndk;23.1.7779620"
-
+      - name: Verify Android SDK components
       - name: Verify Android SDK components
         run: |
+          test -d "$ANDROID_HOME/platforms/android-36"
           test -d "$ANDROID_HOME/platforms/android-33"
           test -d "$ANDROID_HOME/build-tools/33.0.0"
           test -d "$ANDROID_HOME/ndk/23.1.7779620"
 
-          echo "Android SDK OK"
-          echo "Build Tools OK"
-          echo "NDK OK"
+          echo "Android SDK 36 OK"
+          echo "Android SDK 33 OK"
+          echo "Build Tools 33.0.0 OK"
+          echo "NDK 23.1.7779620 OK"
 
       - name: Install JavaScript dependencies
         run: |
