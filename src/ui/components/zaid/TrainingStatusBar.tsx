@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 
 import {
-  Surface,
   Text,
 } from 'react-native-paper';
 
@@ -25,6 +24,8 @@ import {
 import {
   useCompetitiveEvent,
 } from '../../hooks/useCompetitiveEvent';
+
+import ZaidSurface from './ZaidSurface';
 
 export default function TrainingStatusBar() {
   const {
@@ -60,10 +61,12 @@ export default function TrainingStatusBar() {
     ).toFixed(2);
 
   return (
-    <Surface
-      style={
-        styles.container
-      }>
+    <ZaidSurface
+      style={styles.container}
+      cornerRadius={22}
+      refractionHeight={48}
+      bevelWidth={10}
+      dispersionStrength={0.11}>
       <View
         style={
           styles.row
@@ -113,7 +116,7 @@ export default function TrainingStatusBar() {
           </Text>
         </View>
       </View>
-    </Surface>
+    </ZaidSurface>
   );
 }
 
