@@ -14,6 +14,7 @@ import {
   zaidAmoledTheme,
   zaidDarkTheme,
   zaidLightTheme,
+  zaidLiquidGlassTheme,
 } from './zaidThemes';
 
 import {fonts} from './fonts';
@@ -38,6 +39,9 @@ const combinedDarkTheme =
 
 const combinedAmoledTheme =
   merge(DarkTheme, zaidAmoledTheme);
+
+const combinedLiquidGlassTheme =
+  merge(DarkTheme, zaidLiquidGlassTheme);
 
 export function getTheme(
   mode: AppearanceMode,
@@ -64,9 +68,19 @@ export function getTheme(
       break;
 
     case 'liquidGlass':
-      // Temporal.
-      // Liquid Glass real se agregará después.
-      baseTheme = combinedDarkTheme;
+      baseTheme = {
+        ...combinedLiquidGlassTheme,
+        colors: {
+          ...combinedLiquidGlassTheme.colors,
+
+          // React Navigation scene and drawer surfaces must remain translucent
+          // so the native app-wide glass layer stays visible underneath.
+          background: 'transparent',
+          card: 'rgba(12, 14, 24, 0.70)',
+          border: 'rgba(255, 255, 255, 0.16)',
+          notification: '#D8C6FF',
+        },
+      };
       break;
 
     case 'dark':
