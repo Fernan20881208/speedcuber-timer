@@ -31,6 +31,10 @@ import {
   RootDrawerParamList,
 } from './types';
 
+import {
+  useAppearance,
+} from '../../features/appearance/AppearanceContext';
+
 const Drawer =
   createDrawerNavigator<
     RootDrawerParamList
@@ -75,6 +79,14 @@ const DrawerNavigator:
   } =
     useTranslation();
 
+  const {
+    mode,
+  } =
+    useAppearance();
+
+  const useGlass =
+    mode === 'liquidGlass';
+
   return (
     <Drawer.Navigator
       id="Root"
@@ -82,6 +94,22 @@ const DrawerNavigator:
       screenOptions={{
         headerShown:
           false,
+
+        sceneContainerStyle:
+          useGlass
+            ? {
+                backgroundColor:
+                  'transparent',
+              }
+            : undefined,
+
+        drawerStyle:
+          useGlass
+            ? {
+                backgroundColor:
+                  'rgba(12, 14, 24, 0.62)',
+              }
+            : undefined,
       }}>
 
       <Drawer.Screen
