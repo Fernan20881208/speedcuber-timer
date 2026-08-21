@@ -76,3 +76,47 @@ export const zaidAmoledTheme = {
     },
   },
 };
+
+export const zaidLiquidGlassTheme = {
+  ...MD3DarkTheme,
+
+  dark: true,
+
+  colors: {
+    ...MD3DarkTheme.colors,
+
+    primary: '#D8C6FF',
+    onPrimary: '#28134F',
+
+    primaryContainer: 'rgba(111, 72, 190, 0.38)',
+    onPrimaryContainer: '#F0E7FF',
+
+    secondary: '#9BE8F5',
+    onSecondary: '#00363D',
+
+    background: 'transparent',
+    onBackground: '#F7F3FF',
+
+    surface: 'rgba(18, 20, 31, 0.34)',
+    onSurface: '#F7F3FF',
+
+    surfaceVariant: 'rgba(40, 42, 57, 0.38)',
+    onSurfaceVariant: '#E5E1EC',
+
+    surfaceDisabled: 'rgba(18, 20, 31, 0.24)',
+
+    outline: 'rgba(255, 255, 255, 0.32)',
+    outlineVariant: 'rgba(255, 255, 255, 0.16)',
+
+    error: '#FFB4AB',
+
+    elevation: {
+      level0: 'transparent',
+      level1: 'rgba(18, 20, 31, 0.22)',
+      level2: 'rgba(18, 20, 31, 0.28)',
+      level3: 'rgba(18, 20, 31, 0.34)',
+      level4: 'rgba(18, 20, 31, 0.40)',
+      level5: 'rgba(18, 20, 31, 0.46)',
+    },
+  },
+};
