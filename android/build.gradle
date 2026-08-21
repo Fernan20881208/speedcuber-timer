@@ -5,15 +5,16 @@ buildscript {
     ext {
         buildToolsVersion = "33.0.0"
 
-        // Liquid Glass requiere Android 7.0+
+        // Liquid Glass requires Android 7.0+
         minSdkVersion = 24
 
-        // Conservamos el toolchain original de React Native 0.71
-        compileSdkVersion = 33
+        // Liquid Glass v2.0.2 is compiled against API 36.
+        compileSdkVersion = 36
+
+        // Keep the original runtime target behavior for now.
         targetSdkVersion = 33
 
-        // Conservamos el NDK original de Speedcuber Timer.
-        // Liquid Glass viene como AAR ya compilado.
+        // Keep the original NDK. Liquid Glass is consumed as a prebuilt AAR.
         ndkVersion = "23.1.7779620"
     }
 
@@ -38,8 +39,7 @@ allprojects {
         google()
         mavenCentral()
 
-        // Necesario para:
-        // com.github.QWEA0:liquidglass:v2.0.2
+        // Liquid Glass is published through JitPack.
         maven {
             url "https://jitpack.io"
         }
