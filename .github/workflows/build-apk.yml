@@ -51,10 +51,9 @@ jobs:
           which java
           java -version
 
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
-            --version
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
 
-            - name: Install required Android SDK components
+      - name: Install required Android SDK components
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
@@ -64,7 +63,7 @@ jobs:
             "platforms;android-33" \
             "build-tools;33.0.0" \
             "ndk;23.1.7779620"
-      - name: Verify Android SDK components
+
       - name: Verify Android SDK components
         run: |
           test -d "$ANDROID_HOME/platforms/android-36"
@@ -84,13 +83,11 @@ jobs:
             --network-timeout 600000
 
       - name: Make Gradle executable
-        run: |
-          chmod +x android/gradlew
+        run: chmod +x android/gradlew
 
       - name: Verify Gradle
         working-directory: android
-        run: |
-          ./gradlew --version
+        run: ./gradlew --version
 
       - name: Create release keystore
         run: |
@@ -105,22 +102,38 @@ jobs:
             -validity 10000 \
             -dname "CN=Zaid Speedcube Timer, OU=GitHub Actions, O=Zaid, L=Guadalajara, ST=Jalisco, C=MX"
 
-          test -f \
-            "$RUNNER_TEMP/speedcuber-release.keystore"
+          test -f "$RUNNER_TEMP/speedcuber-release.keystore"
 
       - name: Build standalone Release APK
+        id: gradle_build
+        continue-on-error: true
         working-directory: android
         env:
           ANDROID_RELEASE_KEYSTORE_FILE_PATH: ${{ runner.temp }}/speedcuber-release.keystore
           ANDROID_RELEASE_KEYSTORE_PASSWORD: speedcuber123
           ANDROID_RELEASE_KEY_ALIAS: speedcuber
           ANDROID_RELEASE_KEY_PASSWORD: speedcuber123
+        shell: bash
         run: |
+          mkdir -p ../output
+          set -o pipefail
+
           ./gradlew \
             assembleRelease \
             -PreactNativeArchitectures=arm64-v8a \
             --no-daemon \
-            --stacktrace
+            --stacktrace \
+            --info \
+            2>&1 | tee ../output/gradle-build.log
+
+      - name: Upload Gradle build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaid-Speedcube-Gradle-Log
+          path: output/gradle-build.log
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Collect React Native crash symbols
         if: always()
@@ -129,47 +142,27 @@ jobs:
           mkdir -p output/js-symbols
 
           echo "Git commit:"
-          git rev-parse HEAD \
-            | tee output/js-symbols/git-commit.txt
+          git rev-parse HEAD | tee output/js-symbols/git-commit.txt
 
           echo
           echo "Searching generated React Native bundles and source maps..."
-
-          find android/app/build \
-            -type f \
-            \( \
-              -name "*.map" \
-              -o -name "index.android.bundle" \
-            \) \
-            -print || true
 
           while IFS= read -r FILE; do
             [ -z "$FILE" ] && continue
 
             REL="${FILE#android/app/build/}"
-
-            mkdir -p \
-              "output/js-symbols/$(dirname "$REL")"
-
-            cp \
-              "$FILE" \
-              "output/js-symbols/$REL"
+            mkdir -p "output/js-symbols/$(dirname "$REL")"
+            cp "$FILE" "output/js-symbols/$REL"
           done < <(
             find android/app/build \
               -type f \
-              \( \
-                -name "*.map" \
-                -o -name "index.android.bundle" \
-              \) \
+              \( -name "*.map" -o -name "index.android.bundle" \) \
               2>/dev/null
           )
 
           echo
           echo "Collected files:"
-
-          find output/js-symbols \
-            -type f \
-            -print || true
+          find output/js-symbols -type f -print || true
 
       - name: Upload React Native crash symbols
         if: always()
@@ -180,24 +173,23 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      - name: Mark build as failed
+        if: steps.gradle_build.outcome == 'failure'
+        run: |
+          echo "Gradle build failed. Download Zaid-Speedcube-Gradle-Log for the complete error."
+          exit 1
+
       - name: Find generated APK
         if: success()
         run: |
           echo "Generated APK files:"
-
-          find android/app/build/outputs \
-            -type f \
-            -name "*.apk" \
-            -print
+          find android/app/build/outputs -type f -name "*.apk" -print
 
       - name: Copy APK
         if: success()
         shell: bash
         run: |
-          APK="$(find android/app/build/outputs/apk/release \
-            -type f \
-            -name "*.apk" \
-            | head -n 1)"
+          APK="$(find android/app/build/outputs/apk/release -type f -name "*.apk" | head -n 1)"
 
           if [ -z "$APK" ]; then
             echo "ERROR: Release APK was not generated"
@@ -205,16 +197,10 @@ jobs:
           fi
 
           mkdir -p output
+          cp "$APK" output/Zaid-Speedcube-Timer.apk
 
-          cp \
-            "$APK" \
-            output/Zaid-Speedcube-Timer.apk
-
-          echo
           echo "Final APK:"
-
-          ls -lh \
-            output/Zaid-Speedcube-Timer.apk
+          ls -lh output/Zaid-Speedcube-Timer.apk
 
       - name: Upload APK
         if: success()
