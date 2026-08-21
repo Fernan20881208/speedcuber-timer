@@ -6,9 +6,10 @@ import {
 } from 'react-native';
 
 import {
-  Surface,
   Text,
 } from 'react-native-paper';
+
+import ZaidSurface from './ZaidSurface';
 
 interface Props {
   timeMs: number;
@@ -34,8 +35,13 @@ export default function PBOverlay({
     <View
       pointerEvents="none"
       style={styles.overlay}>
-      <Surface
-        style={styles.card}>
+      <ZaidSurface
+        style={styles.card}
+        material="clear"
+        cornerRadius={28}
+        refractionHeight={64}
+        bevelWidth={14}
+        dispersionStrength={0.14}>
         <Text
           variant="headlineSmall"
           style={styles.label}>
@@ -58,7 +64,7 @@ export default function PBOverlay({
                 improvementMs,
               )} s`}
         </Text>
-      </Surface>
+      </ZaidSurface>
     </View>
   );
 }
@@ -82,7 +88,7 @@ const styles =
       paddingHorizontal: 30,
       paddingVertical: 20,
 
-      borderRadius: 24,
+      borderRadius: 28,
 
       alignItems:
         'center',
