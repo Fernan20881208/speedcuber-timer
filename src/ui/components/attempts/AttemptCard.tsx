@@ -28,6 +28,8 @@ import {
   STIF,
 } from '../../../lib/stif';
 
+import ZaidSurface from '../zaid/ZaidSurface';
+
 interface AttemptCardProps {
   attempt:
     STIF.Attempt;
@@ -64,63 +66,72 @@ function AttemptCard({
     );
 
   return (
-    <Card
-      style={
-        styles.card
-      }
-
-      onPress={() =>
-        onPress(
-          attempt,
-        )
-      }>
-
-      <Card.Title
-        title={
-          getAttemptTimeString(
-            wrapped,
+    <ZaidSurface
+      style={styles.glassShell}
+      cornerRadius={22}
+      refractionHeight={48}
+      bevelWidth={10}
+      dispersionStrength={0.10}>
+      <Card
+        style={styles.card}
+        onPress={() =>
+          onPress(
+            attempt,
           )
-        }
+        }>
+        <Card.Title
+          title={
+            getAttemptTimeString(
+              wrapped,
+            )
+          }
 
-        titleVariant=
-          "titleMedium"
+          titleVariant=
+            "titleMedium"
 
-        subtitle={
-          new Date(
-            wrapped.timerStart(),
-          ).toLocaleDateString()
-        }
+          subtitle={
+            new Date(
+              wrapped.timerStart(),
+            ).toLocaleDateString()
+          }
 
-        subtitleVariant=
-          "bodySmall"
+          subtitleVariant=
+            "bodySmall"
 
-        right={() => (
-          <IconButton
-            icon={
-              favorite
-                ? 'star'
-                : 'star-outline'
-            }
+          right={() => (
+            <IconButton
+              icon={
+                favorite
+                  ? 'star'
+                  : 'star-outline'
+              }
 
-            size={21}
+              size={21}
 
-            onPress={() =>
-              onToggleFavorite(
-                attempt,
-              )
-            }
-          />
-        )}
-      />
-
-    </Card>
+              onPress={() =>
+                onToggleFavorite(
+                  attempt,
+                )
+              }
+            />
+          )}
+        />
+      </Card>
+    </ZaidSurface>
   );
 }
 
 const styles =
   StyleSheet.create({
-    card: {
+    glassShell: {
       margin: 10,
+      borderRadius: 22,
+      overflow: 'hidden',
+    },
+
+    card: {
+      margin: 0,
+      backgroundColor: 'transparent',
     },
   });
 
