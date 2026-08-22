@@ -1,21 +1,23 @@
 // Copyright (c) 2023 Joseph Hale <me@jhale.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// License, v. 2.0.
 
-import CenteredBetweenSidebars, {
-  LayoutAllEvent,
-} from '../../layouts/CenteredBetweenSidebars';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {Text} from 'react-native-paper';
 
-import { Attempt } from '../../../lib/stif/wrappers';
+import {Attempt} from '../../../lib/stif/wrappers';
 import AttemptTime from '../attempts/AttemptTime';
-import { GeneratedScramble } from './types';
-import { STIF } from '../../../lib/stif';
+import {GeneratedScramble} from './types';
+import {STIF} from '../../../lib/stif';
 import Scrambles from './Scrambles';
-import { useScrambles } from '../../hooks/useScrambles';
-import { useState } from 'react';
+import {useScrambles} from '../../hooks/useScrambles';
+import {useState} from 'react';
+import ZaidSurface from '../zaid/ZaidSurface';
 
 interface ScramblingViewProps {
   previousAttempt: STIF.Attempt;
@@ -27,38 +29,130 @@ export default function ScramblingView({
   onPress = () => {},
 }: ScramblingViewProps) {
   const scrambles = useScrambles(previousAttempt.event, previousAttempt.id);
-  const [layouts, setLayouts] = useState<LayoutAllEvent>();
+  const [scrambleCardHeight, setScrambleCardHeight] = useState<number>();
+
   return (
-    <Pressable style={styles.landing} onPress={() => onPress(scrambles)}>
-      <CenteredBetweenSidebars
-        direction="vertical"
-        contentWeight={2}
-        contentStyle={{ justifyContent: 'center' }}
-        sidebarWeight={3}
-        sidebarStyle={{ marginHorizontal: 20 }}
-        onLayoutAll={setLayouts}
-        containerStyle={{ alignItems: 'center' }}>
-        <Scrambles
-          scrambles={scrambles}
-          layoutHeightLimit={layouts?.leading.height}
-        />
-        <AttemptTime attempt={new Attempt(previousAttempt)} />
-        <View />
-      </CenteredBetweenSidebars>
+    <Pressable
+      style={styles.landing}
+      onPress={() => onPress(scrambles)}>
+      <View style={styles.content}>
+        <View style={styles.heading}>
+          <Text
+            variant="labelLarge"
+            style={styles.eyebrow}>
+            SCRAMBLE
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={styles.hint}>
+            Toca en cualquier parte para iniciar la inspección
+          </Text>
+        </View>
+
+        <ZaidSurface
+          style={styles.scrambleCard}
+          material="regular"
+          cornerRadius={32}
+          refractionHeight={70}
+          bevelWidth={14}
+          dispersionStrength={0.12}
+          onLayout={event => {
+            setScrambleCardHeight(event.nativeEvent.layout.height);
+          }}>
+          <View style={styles.scrambleContent}>
+            <Scrambles
+              scrambles={scrambles}
+              layoutHeightLimit={
+                scrambleCardHeight
+                  ? Math.max(120, scrambleCardHeight - 38)
+                  : undefined
+              }
+            />
+          </View>
+        </ZaidSurface>
+
+        <ZaidSurface
+          style={styles.previousCard}
+          material="clear"
+          cornerRadius={26}
+          refractionHeight={54}
+          bevelWidth={10}
+          dispersionStrength={0.10}>
+          <Text
+            variant="labelSmall"
+            style={styles.previousLabel}>
+            ÚLTIMO TIEMPO
+          </Text>
+          <View style={styles.previousTime}>
+            <AttemptTime attempt={new Attempt(previousAttempt)} />
+          </View>
+        </ZaidSurface>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   landing: {
+    flex: 1,
     width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  scramble: {
-    fontSize: 16,
-    paddingHorizontal: 20,
-    borderColor: 'red',
-    borderWidth: 2,
+
+  content: {
+    flex: 1,
+    width: '100%',
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 12,
+    gap: 11,
+  },
+
+  heading: {
+    paddingHorizontal: 4,
+  },
+
+  eyebrow: {
+    opacity: 0.62,
+    letterSpacing: 1.5,
+  },
+
+  hint: {
+    marginTop: 2,
+    opacity: 0.52,
+  },
+
+  scrambleCard: {
+    flex: 1,
+    minHeight: 190,
+    width: '100%',
+    borderRadius: 32,
+  },
+
+  scrambleContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+
+  previousCard: {
+    minHeight: 98,
+    width: '100%',
+    borderRadius: 26,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    justifyContent: 'center',
+  },
+
+  previousLabel: {
+    opacity: 0.52,
+    letterSpacing: 1,
+  },
+
+  previousTime: {
+    marginTop: 2,
+    transform: [{scale: 0.72}],
+    transformOrigin: 'left center',
   },
 });
