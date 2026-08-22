@@ -73,12 +73,12 @@ export function getTheme(
         colors: {
           ...combinedLiquidGlassTheme.colors,
 
-          // React Navigation scene and drawer surfaces must remain translucent
-          // so the native app-wide glass layer stays visible underneath.
+          // Navigation must reveal GlassBackdrop. Native glass is applied to
+          // cards, bars, drawers and modals instead of tinting the whole scene.
           background: 'transparent',
-          card: 'rgba(12, 14, 24, 0.70)',
-          border: 'rgba(255, 255, 255, 0.16)',
-          notification: '#D8C6FF',
+          card: 'rgba(255, 255, 255, 0.055)',
+          border: 'rgba(255, 255, 255, 0.13)',
+          notification: '#F1E9FF',
         },
       };
       break;
@@ -92,7 +92,10 @@ export function getTheme(
   return {
     ...baseTheme,
 
-    roundness: 2,
+    roundness:
+      resolvedMode === 'liquidGlass'
+        ? 5
+        : 2,
 
     fonts,
   };
