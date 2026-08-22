@@ -4,8 +4,8 @@
 // License, v. 2.0.
 
 import {
-  Dimensions,
   FlatList,
+  StyleSheet,
   View,
 } from 'react-native';
 
@@ -19,8 +19,7 @@ import {
 import ZeroAttemptsPlaceholder
   from './ZeroAttemptsPlaceholder';
 
-const NUM_COLUMNS =
-  3;
+const NUM_COLUMNS = 2;
 
 interface AttemptListProps {
   attempts:
@@ -83,77 +82,77 @@ function AttemptList({
       STIF.Attempt;
   }) => (
     <View
-      style={{
-        width:
-          Dimensions
-            .get(
-              'window',
-            )
-            .width /
-          NUM_COLUMNS,
-      }}>
-
+      style={styles.item}>
       <AttemptCard
-        key={
-          item.id
-        }
-
-        attempt={
-          item
-        }
-
-        onPress={
-          onPress
-        }
-
+        attempt={item}
+        onPress={onPress}
         favorite={
           isFavorite(
             item.id,
           )
         }
-
         onToggleFavorite={
           onToggleFavorite
         }
       />
-
     </View>
   );
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-
-      <FlatList
-        data={
-          Array.from(
-            attempts,
-          )
-        }
-
-        renderItem={
-          renderAttempt
-        }
-
-        keyExtractor={
-          attempt =>
-            attempt.id
-        }
-
-        numColumns={
-          NUM_COLUMNS
-        }
-
-        initialNumToRender={
-          30
-        }
-      />
-
-    </View>
+    <FlatList
+      style={styles.list}
+      contentContainerStyle={
+        styles.content
+      }
+      columnWrapperStyle={
+        styles.column
+      }
+      data={
+        Array.from(
+          attempts,
+        )
+      }
+      renderItem={
+        renderAttempt
+      }
+      keyExtractor={
+        attempt =>
+          attempt.id
+      }
+      numColumns={
+        NUM_COLUMNS
+      }
+      initialNumToRender={
+        20
+      }
+      showsVerticalScrollIndicator={
+        false
+      }
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+
+  content: {
+    paddingHorizontal: 7,
+    paddingTop: 6,
+    paddingBottom: 14,
+  },
+
+  column: {
+    alignItems: 'stretch',
+  },
+
+  item: {
+    flex: 1,
+    minWidth: 0,
+    maxWidth: '50%',
+  },
+});
 
 export default
   AttemptListDelegator;
