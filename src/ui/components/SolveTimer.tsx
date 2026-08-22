@@ -65,7 +65,6 @@ const SolveTimer: React.FC<SolveTimerProps> = ({onStopTimer}) => {
       </ZaidSurface>
 
       <Text
-        pointerEvents="none"
         variant="labelMedium"
         style={styles.hint}>
         TOCA PARA DETENER
