@@ -1,11 +1,10 @@
 // Copyright (c) 2022 Joseph Hale <me@jhale.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// License, v. 2.0.
 
 import {Milliseconds} from '../../../lib/stif';
-import {Pressable, StyleSheet, Vibration} from 'react-native';
+import {Pressable, StyleSheet, Vibration, View} from 'react-native';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 import {readyHaptic} from '../../../features/haptics/haptics';
@@ -14,6 +13,7 @@ import {Inspection} from '../../../lib/constants';
 import InspectionTime from './InspectionTime';
 import {useTimer} from '../../hooks';
 import {useTranslation} from 'react-i18next';
+import ZaidSurface from '../zaid/ZaidSurface';
 
 interface InspectionTimerProps {
   onInspectionComplete?: () => void;
@@ -55,15 +55,10 @@ export default function InspectionTimer({
       timer.stop();
     }
 
-    // Let React finish the current timer render before switching PracticeView
-    // from INSPECTION to SOLVING.
     setTimeout(() => onInspectionComplete(), 0);
   }, [onInspectionComplete, timer]);
 
   useEffect(() => {
-    // Zaid Speedcube Timer behaviour: inspection lasts exactly 15 seconds
-    // (or the configured inspectionDuration). If the user has not manually
-    // started sooner, automatically enter the solve timer at that point.
     if (
       !completedRef.current &&
       timer.isRunning() &&
@@ -108,23 +103,45 @@ export default function InspectionTimer({
   }
 
   return (
-    <Pressable
-      style={styles.container}
-      delayLongPress={stackmatDelay}
-      onPressIn={handlePressIn}
-      onLongPress={handleLongPress}
-      onPressOut={handlePressOut}>
-      <InspectionTime
-        ready={ready}
-        elapsed={elapsedMillis}
-        inspectionDuration={inspectionDuration}
-        stackmatDelay={stackmatDelay}
-        overtimeUntilDnf={overtimeUntilDnf}
-      />
-      <Button onPress={onCancel} mode="contained-tonal">
-        {t('common.cancel')}
-      </Button>
-    </Pressable>
+    <View style={styles.container}>
+      <Pressable
+        style={styles.timerPressArea}
+        delayLongPress={stackmatDelay}
+        onPressIn={handlePressIn}
+        onLongPress={handleLongPress}
+        onPressOut={handlePressOut}>
+        <ZaidSurface
+          style={styles.timerGlass}
+          material="regular"
+          cornerRadius={34}
+          refractionHeight={72}
+          bevelWidth={15}
+          dispersionStrength={0.13}>
+          <InspectionTime
+            ready={ready}
+            elapsed={elapsedMillis}
+            inspectionDuration={inspectionDuration}
+            stackmatDelay={stackmatDelay}
+            overtimeUntilDnf={overtimeUntilDnf}
+          />
+        </ZaidSurface>
+      </Pressable>
+
+      <ZaidSurface
+        style={styles.cancelGlass}
+        material="clear"
+        cornerRadius={20}
+        refractionHeight={42}
+        bevelWidth={8}
+        dispersionStrength={0.09}>
+        <Button
+          onPress={onCancel}
+          mode="text"
+          contentStyle={styles.cancelContent}>
+          {t('common.cancel')}
+        </Button>
+      </ZaidSurface>
+    </View>
   );
 }
 
@@ -134,5 +151,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    gap: 18,
+  },
+
+  timerPressArea: {
+    width: '100%',
+    alignItems: 'center',
+  },
+
+  timerGlass: {
+    width: '88%',
+    minHeight: 238,
+    borderRadius: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+  },
+
+  cancelGlass: {
+    alignSelf: 'center',
+    minWidth: 150,
+    borderRadius: 20,
+  },
+
+  cancelContent: {
+    minHeight: 44,
   },
 });
