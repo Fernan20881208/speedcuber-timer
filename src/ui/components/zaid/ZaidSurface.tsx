@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  StyleSheet,
   ViewProps,
 } from 'react-native';
 
@@ -29,11 +30,14 @@ interface ZaidSurfaceProps extends ViewProps {
 }
 
 /**
- * Paper Surface in normal themes, real native LiquidGlassView in Liquid Glass mode.
- * This lets the same screens keep working in Light/Dark/AMOLED without branching.
+ * One visual surface API for the whole app.
+ *
+ * - Liquid Glass mode -> real native LiquidGlassView with a subtle common edge.
+ * - Other modes -> normal react-native-paper Surface.
  */
 export default function ZaidSurface({
   children,
+  style,
   elevation = 1,
   material = 'regular',
   cornerRadius = 24,
@@ -51,6 +55,11 @@ export default function ZaidSurface({
     return (
       <LiquidGlass
         {...viewProps}
+        style={[
+          styles.glass,
+          {borderRadius: cornerRadius},
+          style,
+        ]}
         material={material}
         cornerRadius={cornerRadius}
         refractionHeight={refractionHeight}
@@ -67,8 +76,17 @@ export default function ZaidSurface({
   return (
     <Surface
       {...viewProps}
+      style={style}
       elevation={elevation}>
       {children}
     </Surface>
   );
 }
+
+const styles = StyleSheet.create({
+  glass: {
+    overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255, 255, 255, 0.24)',
+  },
+});
