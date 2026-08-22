@@ -77,6 +77,11 @@ export const zaidAmoledTheme = {
   },
 };
 
+/**
+ * Liquid Glass deliberately avoids opaque Material containers.
+ * Native LiquidGlassView provides the material; Paper only supplies text,
+ * icons and very light translucent state layers above it.
+ */
 export const zaidLiquidGlassTheme = {
   ...MD3DarkTheme,
 
@@ -85,38 +90,56 @@ export const zaidLiquidGlassTheme = {
   colors: {
     ...MD3DarkTheme.colors,
 
-    primary: '#D8C6FF',
-    onPrimary: '#28134F',
+    primary: '#F1E9FF',
+    onPrimary: '#21172F',
+    primaryContainer: 'rgba(255, 255, 255, 0.11)',
+    onPrimaryContainer: '#FCF8FF',
 
-    primaryContainer: 'rgba(111, 72, 190, 0.38)',
-    onPrimaryContainer: '#F0E7FF',
+    secondary: '#BDEFFF',
+    onSecondary: '#08252D',
+    secondaryContainer: 'rgba(255, 255, 255, 0.08)',
+    onSecondaryContainer: '#EDFBFF',
 
-    secondary: '#9BE8F5',
-    onSecondary: '#00363D',
+    tertiary: '#FFD0E8',
+    onTertiary: '#321426',
+    tertiaryContainer: 'rgba(255, 255, 255, 0.07)',
+    onTertiaryContainer: '#FFF4FA',
 
     background: 'transparent',
-    onBackground: '#F7F3FF',
+    onBackground: '#F8F5FF',
 
-    surface: 'rgba(18, 20, 31, 0.34)',
-    onSurface: '#F7F3FF',
+    surface: 'rgba(8, 10, 18, 0.10)',
+    onSurface: '#F8F5FF',
 
-    surfaceVariant: 'rgba(40, 42, 57, 0.38)',
-    onSurfaceVariant: '#E5E1EC',
+    surfaceVariant: 'rgba(255, 255, 255, 0.06)',
+    onSurfaceVariant: '#E6E1EC',
 
-    surfaceDisabled: 'rgba(18, 20, 31, 0.24)',
+    surfaceDisabled: 'rgba(255, 255, 255, 0.045)',
+    onSurfaceDisabled: 'rgba(248, 245, 255, 0.38)',
+    surfaceTint: 'transparent',
 
-    outline: 'rgba(255, 255, 255, 0.32)',
-    outlineVariant: 'rgba(255, 255, 255, 0.16)',
+    inverseSurface: 'rgba(247, 243, 255, 0.92)',
+    inverseOnSurface: '#17151C',
+    inversePrimary: '#68558D',
 
-    error: '#FFB4AB',
+    outline: 'rgba(255, 255, 255, 0.30)',
+    outlineVariant: 'rgba(255, 255, 255, 0.13)',
+
+    error: '#FFC1BC',
+    onError: '#4A0808',
+    errorContainer: 'rgba(255, 92, 92, 0.14)',
+    onErrorContainer: '#FFE9E7',
+
+    scrim: 'rgba(0, 0, 0, 0.46)',
+    backdrop: 'rgba(0, 0, 0, 0.34)',
 
     elevation: {
       level0: 'transparent',
-      level1: 'rgba(18, 20, 31, 0.22)',
-      level2: 'rgba(18, 20, 31, 0.28)',
-      level3: 'rgba(18, 20, 31, 0.34)',
-      level4: 'rgba(18, 20, 31, 0.40)',
-      level5: 'rgba(18, 20, 31, 0.46)',
+      level1: 'rgba(255, 255, 255, 0.025)',
+      level2: 'rgba(255, 255, 255, 0.040)',
+      level3: 'rgba(255, 255, 255, 0.055)',
+      level4: 'rgba(255, 255, 255, 0.070)',
+      level5: 'rgba(255, 255, 255, 0.085)',
     },
   },
 };
