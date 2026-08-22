@@ -1,13 +1,22 @@
 // Copyright (c) 2022 Joseph Hale <me@jhale.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// License, v. 2.0.
 
 import * as React from 'react';
 
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { Modal, Portal, Surface, Text, useTheme } from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import {
+  Modal,
+  Portal,
+  Text,
+} from 'react-native-paper';
+
+import ZaidSurface from './zaid/ZaidSurface';
 
 interface TitledModalProps {
   title: string;
@@ -16,65 +25,84 @@ interface TitledModalProps {
   children: React.ReactNode;
 }
 
-const MODAL_HEIGHT = 0.8 * Dimensions.get('window').height;
-
 const TitledModal: React.FC<TitledModalProps> = ({
   title,
   visible,
   onDismiss,
   children,
 }) => {
-  const theme = useTheme();
+  const {height} = useWindowDimensions();
+
   return (
     <Portal>
       <Modal
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={[
-          styles.container,
-          { backgroundColor: theme.colors.background },
+          styles.modalSlot,
+          {
+            maxHeight:
+              height * 0.82,
+          },
         ]}>
-        <Surface style={styles.titleContainer} elevation={2}>
-          <Text variant="titleMedium" style={styles.title}>
-            {title}
-          </Text>
-        </Surface>
-        <View style={styles.childrenContainer}>{children}</View>
-        <View
-          style={[
-            styles.bottomContainer,
-            { backgroundColor: theme.colors.background },
-          ]}
-        />
+        <ZaidSurface
+          style={styles.panel}
+          material="regular"
+          cornerRadius={30}
+          refractionHeight={68}
+          bevelWidth={14}
+          dispersionStrength={0.13}>
+          <View
+            style={styles.titleContainer}>
+            <Text
+              variant="titleLarge"
+              numberOfLines={2}
+              style={styles.title}>
+              {title}
+            </Text>
+          </View>
+
+          <View
+            style={styles.childrenContainer}>
+            {children}
+          </View>
+        </ZaidSurface>
       </Modal>
     </Portal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    maxHeight: MODAL_HEIGHT,
-    margin: 20,
-    borderRadius: 10,
+  modalSlot: {
+    marginHorizontal: 18,
+    marginVertical: 24,
   },
+
+  panel: {
+    maxHeight: '100%',
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+
   titleContainer: {
-    maxHeight: 0.15 * MODAL_HEIGHT,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    alignItems: 'center',
+    minHeight: 58,
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255, 255, 255, 0.15)',
   },
+
+  title: {
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+
   childrenContainer: {
-    maxHeight: 0.85 * MODAL_HEIGHT,
+    flexShrink: 1,
+    minHeight: 0,
     alignItems: 'stretch',
   },
-  bottomContainer: {
-    height: 15,
-    marginTop: -15,
-    opacity: 0.25,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  title: { padding: 10 },
 });
 
 export default TitledModal;
