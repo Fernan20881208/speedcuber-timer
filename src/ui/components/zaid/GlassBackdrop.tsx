@@ -2,13 +2,13 @@ import React from 'react';
 
 import {
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
 /**
- * Detailed content rendered behind the native LiquidGlassView.
- * Liquid Glass needs variation behind it for refraction/dispersion to be visible.
+ * Quiet high-contrast detail behind LiquidGlassView.
+ * The native material needs variation to refract, but the backdrop should not
+ * compete with timer text or make screens look visually stacked.
  */
 export default function GlassBackdrop() {
   return (
@@ -19,20 +19,13 @@ export default function GlassBackdrop() {
       <View style={[styles.orb, styles.orbTwo]} />
       <View style={[styles.orb, styles.orbThree]} />
 
-      <Text style={[styles.word, styles.wordOne]}>
-        ZAID
-      </Text>
-
-      <Text style={[styles.word, styles.wordTwo]}>
-        SPEEDCUBE
-      </Text>
-
-      <Text style={[styles.word, styles.wordThree]}>
-        PB • AO5 • STREAK
-      </Text>
-
       <View style={[styles.band, styles.bandOne]} />
       <View style={[styles.band, styles.bandTwo]} />
+      <View style={[styles.band, styles.bandThree]} />
+
+      <View style={[styles.dot, styles.dotOne]} />
+      <View style={[styles.dot, styles.dotTwo]} />
+      <View style={[styles.dot, styles.dotThree]} />
     </View>
   );
 }
@@ -41,7 +34,7 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
-    backgroundColor: '#07080D',
+    backgroundColor: '#070810',
   },
 
   orb: {
@@ -50,72 +43,72 @@ const styles = StyleSheet.create({
   },
 
   orbOne: {
-    width: 280,
-    height: 280,
-    top: -70,
-    right: -80,
-    backgroundColor: 'rgba(133, 90, 255, 0.40)',
+    width: 340,
+    height: 340,
+    top: -150,
+    right: -135,
+    backgroundColor: 'rgba(135, 105, 255, 0.18)',
   },
 
   orbTwo: {
-    width: 240,
-    height: 240,
-    bottom: 80,
-    left: -100,
-    backgroundColor: 'rgba(56, 189, 248, 0.30)',
+    width: 320,
+    height: 320,
+    bottom: -145,
+    left: -155,
+    backgroundColor: 'rgba(82, 205, 255, 0.13)',
   },
 
   orbThree: {
-    width: 190,
-    height: 190,
-    top: '42%',
-    right: -65,
-    backgroundColor: 'rgba(244, 114, 182, 0.22)',
-  },
-
-  word: {
-    position: 'absolute',
-    fontWeight: '900',
-    color: 'rgba(255, 255, 255, 0.12)',
-    letterSpacing: 5,
-  },
-
-  wordOne: {
-    top: '16%',
-    left: 20,
-    fontSize: 58,
-    transform: [{rotate: '-8deg'}],
-  },
-
-  wordTwo: {
-    top: '50%',
-    right: -28,
-    fontSize: 32,
-    transform: [{rotate: '90deg'}],
-  },
-
-  wordThree: {
-    bottom: '13%',
-    left: 24,
-    fontSize: 17,
-    letterSpacing: 2,
+    width: 230,
+    height: 230,
+    top: '38%',
+    right: -145,
+    backgroundColor: 'rgba(180, 196, 255, 0.085)',
   },
 
   band: {
     position: 'absolute',
-    height: 2,
-    width: '150%',
-    left: '-25%',
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    height: 1,
+    width: '160%',
+    left: '-30%',
+    backgroundColor: 'rgba(255, 255, 255, 0.065)',
   },
 
   bandOne: {
-    top: '34%',
-    transform: [{rotate: '-14deg'}],
+    top: '28%',
+    transform: [{rotate: '-11deg'}],
   },
 
   bandTwo: {
-    bottom: '30%',
-    transform: [{rotate: '11deg'}],
+    top: '57%',
+    transform: [{rotate: '8deg'}],
+  },
+
+  bandThree: {
+    bottom: '15%',
+    transform: [{rotate: '-5deg'}],
+  },
+
+  dot: {
+    position: 'absolute',
+    width: 7,
+    height: 7,
+    borderRadius: 7,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+  },
+
+  dotOne: {
+    top: '24%',
+    left: '16%',
+  },
+
+  dotTwo: {
+    top: '61%',
+    right: '20%',
+  },
+
+  dotThree: {
+    bottom: '20%',
+    left: '38%',
   },
 });
