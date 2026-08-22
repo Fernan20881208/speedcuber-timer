@@ -1,8 +1,7 @@
 // Copyright (c) 2022 Joseph Hale <me@jhale.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// License, v. 2.0.
 
 import {
   useEffect,
@@ -11,6 +10,7 @@ import {
 } from 'react';
 
 import {
+  StyleSheet,
   View,
 } from 'react-native';
 
@@ -39,6 +39,8 @@ import {
 import {
   useFavorites,
 } from '../../features/favorites/FavoritesContext';
+
+import ZaidSurface from '../components/zaid/ZaidSurface';
 
 type Props =
   PracticeStackScreenProps<
@@ -100,90 +102,79 @@ export default function AttemptDetailsScreen({
 
   return (
     <View
-      style={{
-        paddingTop: 12,
-        flex: 1,
-      }}>
-
+      style={styles.container}>
       <View
-        style={{
-          position:
-            'absolute',
-
-          right: 8,
-
-          top: 4,
-
-          zIndex: 100,
-        }}>
-
-        <IconButton
-          icon={
-            favorite
-              ? 'star'
-              : 'star-outline'
-          }
-
-          size={30}
-
-          accessibilityLabel={
-            favorite
-              ? 'Quitar de favoritos'
-              : 'Agregar a favoritos'
-          }
-
-          onPress={() => {
-            toggleFavorite(
-              attemptId,
-            );
-          }}
-        />
-
+        style={styles.toolbar}>
+        <ZaidSurface
+          style={styles.favoriteGlass}
+          material="clear"
+          cornerRadius={22}
+          refractionHeight={42}
+          bevelWidth={8}
+          dispersionStrength={0.10}>
+          <IconButton
+            icon={
+              favorite
+                ? 'star'
+                : 'star-outline'
+            }
+            size={25}
+            style={styles.favoriteButton}
+            accessibilityLabel={
+              favorite
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            }
+            onPress={() => {
+              toggleFavorite(
+                attemptId,
+              );
+            }}
+          />
+        </ZaidSurface>
       </View>
 
-      <AttemptDetails
-        attempt={
-          attempt
-        }
-
-        onReplay={() =>
-          navigation.push(
-            'Player',
-            {
-              attempt:
-                attempt.stif(),
-            },
-          )
-        }
-
-        onDelete={() =>
-          setConfirming(
-            true,
-          )
-        }
-
-        onInspectTPS={() =>
-          navigation.push(
-            'TPSChart',
-            {
-              attempt:
-                attempt.stif(),
-            },
-          )
-        }
-      />
+      <View
+        style={styles.details}>
+        <AttemptDetails
+          attempt={
+            attempt
+          }
+          onReplay={() =>
+            navigation.push(
+              'Player',
+              {
+                attempt:
+                  attempt.stif(),
+              },
+            )
+          }
+          onDelete={() =>
+            setConfirming(
+              true,
+            )
+          }
+          onInspectTPS={() =>
+            navigation.push(
+              'TPSChart',
+              {
+                attempt:
+                  attempt.stif(),
+              },
+            )
+          }
+        />
+      </View>
 
       <ConfirmationDialog
         visible={
           confirming
         }
-
         onCancel={() =>
           setConfirming(
             false,
           )
         }
-
         onConfirm={() => {
           setConfirming(
             false,
@@ -200,7 +191,33 @@ export default function AttemptDetailsScreen({
           );
         }}
       />
-
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+
+  toolbar: {
+    minHeight: 52,
+    paddingHorizontal: 14,
+    paddingTop: 8,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+
+  favoriteGlass: {
+    borderRadius: 22,
+  },
+
+  favoriteButton: {
+    margin: 0,
+  },
+
+  details: {
+    flex: 1,
+  },
+});
