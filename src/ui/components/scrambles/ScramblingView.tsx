@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
 
   previousCard: {
-    minHeight: 98,
+    minHeight: 104,
     width: '100%',
     borderRadius: 26,
     paddingHorizontal: 16,
@@ -152,7 +152,5 @@ const styles = StyleSheet.create({
 
   previousTime: {
     marginTop: 2,
-    transform: [{scale: 0.72}],
-    transformOrigin: 'left center',
   },
 });
