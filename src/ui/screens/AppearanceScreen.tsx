@@ -1,15 +1,16 @@
 import React from 'react';
 
 import {
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {
   RadioButton,
   Text,
-  useTheme,
 } from 'react-native-paper';
 
 import {
@@ -20,33 +21,39 @@ import {
   useAppearance,
 } from '../../features/appearance/AppearanceContext';
 
-import LiquidGlass
-  from '../components/zaid/LiquidGlass';
+import ZaidSurface
+  from '../components/zaid/ZaidSurface';
 
 interface ThemeOption {
   label: string;
+  description: string;
   value: AppearanceMode;
 }
 
 const OPTIONS: ThemeOption[] = [
   {
     label: 'Sistema',
+    description: 'Usa automáticamente el tema claro u oscuro de Android.',
     value: 'system',
   },
   {
     label: 'Claro',
+    description: 'Superficies claras y alto contraste para uso de día.',
     value: 'light',
   },
   {
     label: 'Oscuro',
+    description: 'Tema oscuro Material con superficies profundas.',
     value: 'dark',
   },
   {
     label: 'AMOLED',
+    description: 'Negro puro para aprovechar pantallas OLED y AMOLED.',
     value: 'amoled',
   },
   {
     label: 'Liquid Glass',
+    description: 'Cristal nativo con refracción, dispersión y reflejos dinámicos.',
     value: 'liquidGlass',
   },
 ];
@@ -57,624 +64,316 @@ export default function AppearanceScreen() {
     setMode,
   } = useAppearance();
 
-  const theme =
-    useTheme();
-
   return (
-    <ScrollView
-      style={{
-        backgroundColor:
-          theme.colors.background,
-      }}
-      contentContainerStyle={
-        styles.container
-      }>
-
-      <Text
-        variant="headlineMedium"
-        style={
-          styles.title
-        }>
-        Apariencia
-      </Text>
-
-      <Text
-        variant="bodyMedium"
-        style={
-          styles.description
-        }>
-        Selecciona el estilo visual de
-        Zaid Speedcube Timer.
-      </Text>
-
-      <RadioButton.Group
-        value={
-          mode
-        }
-        onValueChange={value => {
-          void setMode(
-            value as AppearanceMode,
-          );
-        }}>
-
-        {OPTIONS.map(
-          option => (
-            <RadioButton.Item
-              key={
-                option.value
-              }
-              label={
-                option.label
-              }
-              value={
-                option.value
-              }
-            />
-          ),
-        )}
-
-      </RadioButton.Group>
-
-      {mode ===
-        'amoled' && (
-        <View
-          style={
-            styles.amoledInfo
-          }>
-
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'bottom']}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}>
+        <View>
           <Text
-            variant="titleMedium">
-            AMOLED
+            variant="headlineMedium"
+            style={styles.heading}>
+            Apariencia
           </Text>
 
           <Text
             variant="bodyMedium"
-            style={
-              styles.secondaryText
-            }>
-            Negro puro para pantallas
-            OLED y AMOLED.
+            style={styles.lead}>
+            Elige un estilo. Liquid Glass usa el componente nativo de Android en lugar de pintar tarjetas opacas.
           </Text>
-
         </View>
-      )}
 
-      {mode ===
-        'liquidGlass' && (
-        <View
-          style={
-            styles.liquidSection
-          }>
+        <ZaidSurface
+          style={styles.optionsCard}
+          material="regular"
+          cornerRadius={28}
+          refractionHeight={60}
+          bevelWidth={12}
+          dispersionStrength={0.11}>
+          {OPTIONS.map((option, index) => {
+            const selected =
+              mode === option.value;
 
-          <Text
-            variant="titleMedium"
-            style={
-              styles.liquidTitle
-            }>
-            Vista previa
-          </Text>
+            return (
+              <React.Fragment
+                key={option.value}>
+                <Pressable
+                  accessibilityRole="radio"
+                  accessibilityState={{checked: selected}}
+                  onPress={() => {
+                    void setMode(option.value);
+                  }}
+                  style={({pressed}) => [
+                    styles.option,
+                    selected && styles.optionSelected,
+                    pressed && styles.optionPressed,
+                  ]}>
+                  <View
+                    style={styles.optionCopy}>
+                    <Text
+                      variant="titleMedium"
+                      style={selected ? styles.optionTitleSelected : undefined}>
+                      {option.label}
+                    </Text>
 
-          <Text
-            variant="bodySmall"
-            style={
-              styles.secondaryText
-            }>
-            Esta tarjeta utiliza el
-            componente Liquid Glass
-            nativo de Android.
-          </Text>
+                    <Text
+                      variant="bodySmall"
+                      style={styles.optionDescription}>
+                      {option.description}
+                    </Text>
+                  </View>
 
-          <View
-            style={
-              styles.glassDemo
-            }>
+                  <RadioButton
+                    value={option.value}
+                    status={selected ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                      void setMode(option.value);
+                    }}
+                  />
+                </Pressable>
 
-            {/*
-             * Fondo visible detrás del
-             * cristal.
-             *
-             * Liquid Glass necesita
-             * contenido detrás para que
-             * la refracción se note.
-             */}
+                {index < OPTIONS.length - 1 && (
+                  <View style={styles.divider} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </ZaidSurface>
+
+        {mode === 'liquidGlass' && (
+          <ZaidSurface
+            style={styles.previewCard}
+            material="clear"
+            cornerRadius={30}
+            refractionHeight={68}
+            bevelWidth={14}
+            dispersionStrength={0.14}>
+            <Text
+              variant="labelLarge"
+              style={styles.previewEyebrow}>
+              LIQUID GLASS ACTIVO
+            </Text>
+
+            <Text
+              variant="headlineSmall"
+              style={styles.previewTitle}>
+              Zaid Speedcube Timer
+            </Text>
+
+            <Text
+              variant="bodyMedium"
+              style={styles.previewDescription}>
+              Las tarjetas, navegación y controles comparten el mismo material para evitar colores sólidos mezclados.
+            </Text>
 
             <View
-              style={
-                styles.glassBackdrop
-              }>
-
+              style={styles.previewStats}>
               <View
-                style={[
-                  styles.glow,
-                  styles.glowBlue,
-                ]}
-              />
-
-              <View
-                style={[
-                  styles.glow,
-                  styles.glowPurple,
-                ]}
-              />
-
-              <View
-                style={[
-                  styles.glow,
-                  styles.glowCyan,
-                ]}
-              />
-
-              <Text
-                style={[
-                  styles.backdropText,
-                  {
-                    color:
-                      theme.colors
-                        .onBackground,
-                  },
-                ]}>
-                ZAID
-              </Text>
-
-              <Text
-                style={[
-                  styles.backdropText2,
-                  {
-                    color:
-                      theme.colors
-                        .onBackground,
-                  },
-                ]}>
-                SPEEDCUBE
-              </Text>
-
-              <Text
-                style={[
-                  styles.backdropText3,
-                  {
-                    color:
-                      theme.colors
-                        .onBackground,
-                  },
-                ]}>
-                TIMER
-              </Text>
-
-            </View>
-
-            <LiquidGlass
-              style={
-                styles.glassCard
-              }
-
-              material="regular"
-
-              cornerRadius={
-                28
-              }
-
-              refractionHeight={
-                66
-              }
-
-              bevelWidth={
-                14
-              }
-
-              dispersionStrength={
-                0.12
-              }
-
-              dynamicBackground={
-                true
-              }
-
-              sensorHighlight={
-                true
-              }
-
-              adaptiveTint={
-                true
-              }>
-
-              <View
-                style={
-                  styles.glassContent
-                }>
-
+                style={styles.previewStat}>
                 <Text
-                  variant=
-                    "titleLarge"
-                  style={
-                    styles.glassHeading
-                  }>
-                  Liquid Glass
+                  variant="titleLarge"
+                  style={styles.previewValue}>
+                  8.42
                 </Text>
-
                 <Text
-                  variant=
-                    "bodyMedium">
-                  Zaid Speedcube Timer
+                  variant="labelSmall"
+                  style={styles.previewLabel}>
+                  PB
                 </Text>
-
-                <View
-                  style={
-                    styles.glassStats
-                  }>
-
-                  <View
-                    style={
-                      styles.stat
-                    }>
-
-                    <Text
-                      variant=
-                        "labelMedium">
-                      PB
-                    </Text>
-
-                    <Text
-                      variant=
-                        "titleMedium">
-                      8.421
-                    </Text>
-
-                  </View>
-
-                  <View
-                    style={
-                      styles.stat
-                    }>
-
-                    <Text
-                      variant=
-                        "labelMedium">
-                      AO5
-                    </Text>
-
-                    <Text
-                      variant=
-                        "titleMedium">
-                      10.31
-                    </Text>
-
-                  </View>
-
-                  <View
-                    style={
-                      styles.stat
-                    }>
-
-                    <Text
-                      variant=
-                        "labelMedium">
-                      RACHA
-                    </Text>
-
-                    <Text
-                      variant=
-                        "titleMedium">
-                      🔥 6
-                    </Text>
-
-                  </View>
-
-                </View>
-
               </View>
 
-            </LiquidGlass>
+              <View style={styles.previewDivider} />
 
-          </View>
+              <View
+                style={styles.previewStat}>
+                <Text
+                  variant="titleLarge"
+                  style={styles.previewValue}>
+                  9.18
+                </Text>
+                <Text
+                  variant="labelSmall"
+                  style={styles.previewLabel}>
+                  AO5
+                </Text>
+              </View>
 
-          <Text
-            variant="bodySmall"
-            style={
-              styles.glassHint
-            }>
-            Inclina ligeramente el
-            teléfono para comprobar el
-            highlight dinámico del
-            cristal.
-          </Text>
+              <View style={styles.previewDivider} />
 
-        </View>
-      )}
+              <View
+                style={styles.previewStat}>
+                <Text
+                  variant="titleLarge"
+                  style={styles.previewValue}>
+                  12
+                </Text>
+                <Text
+                  variant="labelSmall"
+                  style={styles.previewLabel}>
+                  RACHA
+                </Text>
+              </View>
+            </View>
+          </ZaidSurface>
+        )}
 
-    </ScrollView>
+        {mode === 'amoled' && (
+          <ZaidSurface
+            style={styles.infoCard}
+            cornerRadius={24}
+            elevation={1}>
+            <Text
+              variant="titleMedium"
+              style={styles.infoTitle}>
+              AMOLED
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={styles.infoBody}>
+              Este modo conserva negro puro en el fondo y superficies para minimizar la emisión de píxeles.
+            </Text>
+          </ZaidSurface>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles =
-  StyleSheet.create({
-    container: {
-      padding: 24,
-
-      paddingBottom:
-        48,
-    },
-
-    title: {
-      marginBottom:
-        8,
-    },
-
-    description: {
-      marginBottom:
-        20,
-
-      opacity:
-        0.8,
-    },
-
-    secondaryText: {
-      opacity:
-        0.7,
-    },
-
-    amoledInfo: {
-      marginTop:
-        24,
-
-      padding:
-        18,
-
-      borderRadius:
-        20,
-
-      backgroundColor:
-        '#000000',
-
-      borderWidth:
-        1,
-
-      borderColor:
-        '#262626',
-    },
-
-    liquidSection: {
-      marginTop:
-        26,
-    },
-
-    liquidTitle: {
-      marginBottom:
-        4,
-    },
-
-    glassDemo: {
-      height:
-        260,
-
-      marginTop:
-        18,
-
-      overflow:
-        'hidden',
-
-      borderRadius:
-        32,
-
-      position:
-        'relative',
-
-      backgroundColor:
-        '#080812',
-    },
-
-    glassBackdrop: {
-      ...StyleSheet.absoluteFillObject,
-
-      overflow:
-        'hidden',
-    },
-
-    glow: {
-      position:
-        'absolute',
-
-      borderRadius:
-        999,
-    },
-
-    glowBlue: {
-      width:
-        180,
-
-      height:
-        180,
-
-      left:
-        -45,
-
-      top:
-        -35,
-
-      backgroundColor:
-        '#274CFF',
-
-      opacity:
-        0.75,
-    },
-
-    glowPurple: {
-      width:
-        190,
-
-      height:
-        190,
-
-      right:
-        -55,
-
-      bottom:
-        -50,
-
-      backgroundColor:
-        '#8B3DFF',
-
-      opacity:
-        0.75,
-    },
-
-    glowCyan: {
-      width:
-        90,
-
-      height:
-        90,
-
-      right:
-        35,
-
-      top:
-        20,
-
-      backgroundColor:
-        '#00D4FF',
-
-      opacity:
-        0.65,
-    },
-
-    backdropText: {
-      position:
-        'absolute',
-
-      left:
-        18,
-
-      top:
-        28,
-
-      fontSize:
-        28,
-
-      fontWeight:
-        '900',
-
-      opacity:
-        0.28,
-
-      letterSpacing:
-        2,
-    },
-
-    backdropText2: {
-      position:
-        'absolute',
-
-      right:
-        12,
-
-      bottom:
-        48,
-
-      fontSize:
-        22,
-
-      fontWeight:
-        '900',
-
-      opacity:
-        0.24,
-
-      letterSpacing:
-        2,
-    },
-
-    backdropText3: {
-      position:
-        'absolute',
-
-      left:
-        40,
-
-      bottom:
-        12,
-
-      fontSize:
-        18,
-
-      fontWeight:
-        '800',
-
-      opacity:
-        0.2,
-
-      letterSpacing:
-        4,
-    },
-
-    glassCard: {
-      position:
-        'absolute',
-
-      left:
-        24,
-
-      right:
-        24,
-
-      top:
-        62,
-
-      height:
-        140,
-    },
-
-    glassContent: {
-      flex:
-        1,
-
-      paddingHorizontal:
-        18,
-
-      paddingVertical:
-        14,
-
-      justifyContent:
-        'center',
-
-      alignItems:
-        'center',
-    },
-
-    glassHeading: {
-      fontWeight:
-        '700',
-    },
-
-    glassStats: {
-      width:
-        '100%',
-
-      flexDirection:
-        'row',
-
-      justifyContent:
-        'space-around',
-
-      marginTop:
-        12,
-    },
-
-    stat: {
-      alignItems:
-        'center',
-
-      minWidth:
-        60,
-    },
-
-    glassHint: {
-      marginTop:
-        12,
-
-      opacity:
-        0.65,
-
-      textAlign:
-        'center',
-    },
-  });
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+
+  container: {
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 34,
+    gap: 18,
+  },
+
+  heading: {
+    fontWeight: '800',
+    letterSpacing: -0.6,
+  },
+
+  lead: {
+    marginTop: 5,
+    opacity: 0.70,
+    lineHeight: 20,
+  },
+
+  optionsCard: {
+    borderRadius: 28,
+    paddingVertical: 4,
+  },
+
+  option: {
+    minHeight: 76,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 17,
+    paddingRight: 8,
+    paddingVertical: 10,
+  },
+
+  optionSelected: {
+    backgroundColor: 'rgba(255, 255, 255, 0.075)',
+  },
+
+  optionPressed: {
+    opacity: 0.72,
+  },
+
+  optionCopy: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 8,
+  },
+
+  optionTitleSelected: {
+    fontWeight: '800',
+  },
+
+  optionDescription: {
+    marginTop: 2,
+    opacity: 0.66,
+    lineHeight: 17,
+  },
+
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 17,
+    marginRight: 17,
+    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+  },
+
+  previewCard: {
+    borderRadius: 30,
+    padding: 20,
+  },
+
+  previewEyebrow: {
+    opacity: 0.62,
+    letterSpacing: 1.4,
+  },
+
+  previewTitle: {
+    marginTop: 6,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+
+  previewDescription: {
+    marginTop: 7,
+    opacity: 0.72,
+    lineHeight: 20,
+  },
+
+  previewStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 18,
+    paddingTop: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
+  },
+
+  previewStat: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  previewValue: {
+    fontWeight: '800',
+  },
+
+  previewLabel: {
+    marginTop: 1,
+    opacity: 0.58,
+    letterSpacing: 0.8,
+  },
+
+  previewDivider: {
+    width: StyleSheet.hairlineWidth,
+    height: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+
+  infoCard: {
+    padding: 18,
+    borderRadius: 24,
+  },
+
+  infoTitle: {
+    fontWeight: '700',
+  },
+
+  infoBody: {
+    marginTop: 5,
+    opacity: 0.72,
+    lineHeight: 20,
+  },
+});
