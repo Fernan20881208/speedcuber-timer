@@ -9,6 +9,9 @@ import {
 import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
+import {
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 
 import MainNavigator from './navigation/MainNavigator';
 
@@ -61,17 +64,15 @@ const ThemedApp = () => {
     <PaperProvider
       theme={theme}>
       <RealmProvider>
-  <FavoritesProvider>
-    <TrainingProvider>
+        <FavoritesProvider>
+          <TrainingProvider>
+            {__DEV__ &&
+              <DevComponents />}
 
-      {__DEV__ &&
-        <DevComponents />}
-
-      <MainNavigator />
-
-    </TrainingProvider>
-  </FavoritesProvider>
-</RealmProvider>
+            <MainNavigator />
+          </TrainingProvider>
+        </FavoritesProvider>
+      </RealmProvider>
     </PaperProvider>
   );
 };
@@ -86,9 +87,11 @@ const App = () => {
   return (
     <GestureHandlerRootView
       style={{flex: 1}}>
-      <AppearanceProvider>
-        <ThemedApp />
-      </AppearanceProvider>
+      <SafeAreaProvider>
+        <AppearanceProvider>
+          <ThemedApp />
+        </AppearanceProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 };
