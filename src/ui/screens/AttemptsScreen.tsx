@@ -40,6 +40,8 @@ import {
   useFavorites,
 } from '../../features/favorites/FavoritesContext';
 
+import ZaidSurface from '../components/zaid/ZaidSurface';
+
 type Props =
   TimerTabScreenProps<
     'Attempts'
@@ -113,64 +115,60 @@ export default function AttemptsScreen({
       style={
         styles.container
       }>
-
-      <SegmentedButtons
-        value={
-          filter
-        }
-
-        onValueChange={
-          value =>
-            setFilter(
-              value as Filter,
-            )
-        }
-
-        buttons={[
-          {
-            value:
-              'all',
-
-            label:
-              'Todos',
-
-            icon:
-              'history',
-          },
-
-          {
-            value:
-              'favorites',
-
-            label:
-              'Favoritos',
-
-            icon:
-              'star',
-          },
-        ]}
-
-        style={
-          styles.filters
-        }
-      />
+      <ZaidSurface
+        style={styles.filterGlass}
+        material="clear"
+        cornerRadius={24}
+        refractionHeight={48}
+        bevelWidth={10}
+        dispersionStrength={0.10}>
+        <SegmentedButtons
+          value={
+            filter
+          }
+          onValueChange={
+            value =>
+              setFilter(
+                value as Filter,
+              )
+          }
+          buttons={[
+            {
+              value:
+                'all',
+              label:
+                'Todos',
+              icon:
+                'history',
+            },
+            {
+              value:
+                'favorites',
+              label:
+                'Favoritos',
+              icon:
+                'star',
+            },
+          ]}
+          style={
+            styles.filters
+          }
+        />
+      </ZaidSurface>
 
       <AttemptList
         attempts={
           visibleAttempts
         }
-
         isFavorite={
           isFavorite
         }
-
         onToggleFavorite={
           attempt =>
             toggleFavorite(
               attempt.id,
             )
         }
-
         onPress={(
           attempt:
             STIF.Attempt,
@@ -191,25 +189,24 @@ export default function AttemptsScreen({
           );
         }}
       />
-
     </View>
   );
 }
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
 
-    filters: {
-      marginHorizontal:
-        12,
+  filterGlass: {
+    marginHorizontal: 12,
+    marginTop: 10,
+    marginBottom: 4,
+    padding: 4,
+    borderRadius: 24,
+  },
 
-      marginTop:
-        10,
-
-      marginBottom:
-        4,
-    },
-  });
+  filters: {
+    margin: 0,
+  },
+});
