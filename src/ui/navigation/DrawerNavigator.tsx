@@ -1,19 +1,23 @@
 // Copyright (c) 2023 Joseph Hale <me@jhale.dev>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// License, v. 2.0.
 
 import * as React
   from 'react';
 
 import {
   createDrawerNavigator,
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+  DrawerItemList,
 } from '@react-navigation/drawer';
 
 import {
   useTranslation,
 } from 'react-i18next';
+import {StyleSheet, View} from 'react-native';
+import {Text} from 'react-native-paper';
 
 import BackupScreen
   from '../screens/BackupScreen';
@@ -34,22 +38,12 @@ import {
 import {
   useAppearance,
 } from '../../features/appearance/AppearanceContext';
+import ZaidSurface from '../components/zaid/ZaidSurface';
 
 const Drawer =
   createDrawerNavigator<
     RootDrawerParamList
   >();
-
-/*
- * IMPORTANTE:
- *
- * No importamos las pantallas DEV
- * estáticamente.
- *
- * En Release no deben inicializarse
- * ni cargar todos los archivos
- * *.examples.tsx.
- */
 
 const ExamplesNavigator =
   __DEV__
@@ -72,6 +66,60 @@ const FileSystemStackNavigator =
       ).default
     : null;
 
+function DrawerContent(
+  props: DrawerContentComponentProps,
+) {
+  const {
+    mode,
+  } = useAppearance();
+
+  const useGlass =
+    mode === 'liquidGlass';
+
+  const content = (
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={styles.drawerScroll}>
+      <View
+        style={styles.brand}>
+        <Text
+          variant="headlineSmall"
+          style={styles.brandTitle}>
+          Zaid
+        </Text>
+        <Text
+          variant="bodySmall"
+          style={styles.brandSubtitle}>
+          Speedcube Timer
+        </Text>
+      </View>
+
+      <View
+        style={styles.drawerItems}>
+        <DrawerItemList
+          {...props}
+        />
+      </View>
+    </DrawerContentScrollView>
+  );
+
+  if (!useGlass) {
+    return content;
+  }
+
+  return (
+    <ZaidSurface
+      style={styles.drawerGlass}
+      material="regular"
+      cornerRadius={0}
+      refractionHeight={62}
+      bevelWidth={0}
+      dispersionStrength={0.11}>
+      {content}
+    </ZaidSurface>
+  );
+}
+
 const DrawerNavigator:
   React.FC = () => {
   const {
@@ -90,23 +138,39 @@ const DrawerNavigator:
   return (
     <Drawer.Navigator
       id="Root"
-
+      drawerContent={props => (
+        <DrawerContent
+          {...props}
+        />
+      )}
       screenOptions={{
         headerShown:
           false,
+
+        sceneContainerStyle:
+          useGlass
+            ? {
+                backgroundColor:
+                  'transparent',
+              }
+            : undefined,
 
         drawerStyle:
           useGlass
             ? {
                 backgroundColor:
-                  'rgba(12, 14, 24, 0.62)',
+                  'transparent',
               }
+            : undefined,
+
+        overlayColor:
+          useGlass
+            ? 'rgba(0, 0, 0, 0.38)'
             : undefined,
       }}>
 
       <Drawer.Screen
         name="Practice"
-
         component={
           PracticeNavigator
         }
@@ -114,11 +178,9 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Training"
-
         component={
           TrainingScreen
         }
-
         options={{
           drawerLabel:
             'Entrenamiento',
@@ -127,11 +189,9 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Appearance"
-
         component={
           AppearanceScreen
         }
-
         options={{
           drawerLabel:
             'Apariencia',
@@ -140,11 +200,9 @@ const DrawerNavigator:
 
       <Drawer.Screen
         name="Backup"
-
         component={
           BackupScreen
         }
-
         options={{
           drawerLabel:
             t(
@@ -160,11 +218,9 @@ const DrawerNavigator:
           <>
             <Drawer.Screen
               name="Examples"
-
               component={
                 ExamplesNavigator
               }
-
               options={{
                 drawerLabel:
                   'Dev Examples',
@@ -173,11 +229,9 @@ const DrawerNavigator:
 
             <Drawer.Screen
               name="Play"
-
               component={
                 PlayScreen
               }
-
               options={{
                 drawerLabel:
                   'Dev Playground',
@@ -186,11 +240,9 @@ const DrawerNavigator:
 
             <Drawer.Screen
               name="FileSystemStack"
-
               component={
                 FileSystemStackNavigator
               }
-
               options={{
                 drawerLabel:
                   'File System',
@@ -201,5 +253,41 @@ const DrawerNavigator:
     </Drawer.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  drawerGlass: {
+    flex: 1,
+    borderRadius: 0,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    borderLeftWidth: 0,
+  },
+
+  drawerScroll: {
+    flexGrow: 1,
+    paddingTop: 12,
+  },
+
+  brand: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 18,
+  },
+
+  brandTitle: {
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+
+  brandSubtitle: {
+    marginTop: 1,
+    opacity: 0.62,
+    letterSpacing: 0.4,
+  },
+
+  drawerItems: {
+    paddingHorizontal: 4,
+  },
+});
 
 export default DrawerNavigator;
