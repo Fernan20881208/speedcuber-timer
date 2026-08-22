@@ -5,7 +5,9 @@ import React, {
 import {
   ScrollView,
   StyleSheet,
+  View,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {
   Button,
@@ -16,6 +18,9 @@ import {
 import {
   useTraining,
 } from '../../features/training/TrainingContext';
+import {
+  useAppearance,
+} from '../../features/appearance/AppearanceContext';
 
 import ZaidSurface from '../components/zaid/ZaidSurface';
 
@@ -25,6 +30,13 @@ export default function TrainingScreen() {
     startSession,
     endSession,
   } = useTraining();
+
+  const {
+    mode,
+  } = useAppearance();
+
+  const useGlass =
+    mode === 'liquidGlass';
 
   const [
     name,
@@ -47,57 +59,116 @@ export default function TrainingScreen() {
     useState('50');
 
   if (activeSession) {
+    const target =
+      (
+        activeSession.targetTimeMs /
+        1000
+      ).toFixed(2);
+
     return (
-      <ScrollView
-        contentContainerStyle={
-          styles.container
-        }>
-        <Text
-          variant="headlineMedium">
-          Sesión activa
-        </Text>
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={['top', 'bottom']}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={
+            styles.container
+          }>
+          <View>
+            <Text
+              variant="headlineMedium"
+              style={styles.heading}>
+              Sesión activa
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={styles.lead}>
+              Mantén el objetivo visible sin recargar el cronómetro.
+            </Text>
+          </View>
 
-        <ZaidSurface
-          style={styles.card}
-          cornerRadius={24}
-          refractionHeight={58}
-          dispersionStrength={0.11}>
-          <Text
-            variant="titleLarge">
-            {
-              activeSession.name
-            }
-          </Text>
+          <ZaidSurface
+            style={styles.card}
+            material="clear"
+            cornerRadius={28}
+            refractionHeight={62}
+            bevelWidth={12}
+            dispersionStrength={0.12}>
+            <Text
+              variant="headlineSmall"
+              numberOfLines={2}
+              style={styles.sessionName}>
+              {activeSession.name}
+            </Text>
 
-          <Text>
-            Meta: Sub{' '}
-            {(
-              activeSession.targetTimeMs /
-              1000
-            ).toFixed(2)}
-          </Text>
+            <View
+              style={styles.metrics}>
+              <View
+                style={styles.metric}>
+                <Text
+                  variant="labelMedium"
+                  style={styles.metricLabel}>
+                  OBJETIVO
+                </Text>
+                <Text
+                  variant="titleLarge"
+                  style={styles.metricValue}>
+                  Sub {target}
+                </Text>
+              </View>
 
-          <Text>
-            Solves:{' '}
-            {
-              activeSession
-                .attemptIds
-                .length
-            }
-            {activeSession.targetSolves
-              ? ` / ${activeSession.targetSolves}`
-              : ''}
-          </Text>
-        </ZaidSurface>
+              <View
+                style={styles.metricDivider}
+              />
 
-        <Button
-          mode="contained"
-          onPress={() => {
-            void endSession();
-          }}>
-          Finalizar sesión
-        </Button>
-      </ScrollView>
+              <View
+                style={styles.metric}>
+                <Text
+                  variant="labelMedium"
+                  style={styles.metricLabel}>
+                  SOLVES
+                </Text>
+                <Text
+                  variant="titleLarge"
+                  style={styles.metricValue}>
+                  {activeSession.attemptIds.length}
+                  {activeSession.targetSolves
+                    ? ` / ${activeSession.targetSolves}`
+                    : ''}
+                </Text>
+              </View>
+            </View>
+          </ZaidSurface>
+
+          {useGlass ? (
+            <ZaidSurface
+              style={styles.actionGlass}
+              material="clear"
+              cornerRadius={22}
+              refractionHeight={46}
+              bevelWidth={9}
+              dispersionStrength={0.10}>
+              <Button
+                mode="text"
+                contentStyle={styles.actionContent}
+                onPress={() => {
+                  void endSession();
+                }}>
+                Finalizar sesión
+              </Button>
+            </ZaidSurface>
+          ) : (
+            <Button
+              mode="contained"
+              contentStyle={styles.actionContent}
+              onPress={() => {
+                void endSession();
+              }}>
+              Finalizar sesión
+            </Button>
+          )}
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
@@ -125,101 +196,196 @@ export default function TrainingScreen() {
     ) &&
     solves > 0;
 
+  const start = () => {
+    void startSession({
+      name:
+        name.trim() ||
+        'Entrenamiento',
+
+      targetTimeMs:
+        Math.round(
+          seconds *
+            1000,
+        ),
+
+      targetSolves:
+        solves,
+    });
+  };
+
   return (
-    <ScrollView
-      contentContainerStyle={
-        styles.container
-      }>
-      <Text
-        variant="headlineMedium">
-        Nueva sesión
-      </Text>
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'bottom']}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={
+          styles.container
+        }>
+        <View>
+          <Text
+            variant="headlineMedium"
+            style={styles.heading}>
+            Nueva sesión
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={styles.lead}>
+            Define un Sub-X y una cantidad de solves para entrenar con intención.
+          </Text>
+        </View>
 
-      <ZaidSurface
-        style={styles.formCard}
-        cornerRadius={26}
-        refractionHeight={58}
-        dispersionStrength={0.10}>
-        <TextInput
-          label="Nombre"
-          value={name}
-          onChangeText={
-            setName
-          }
-          style={styles.input}
-        />
+        <ZaidSurface
+          style={styles.formCard}
+          material="regular"
+          cornerRadius={28}
+          refractionHeight={62}
+          bevelWidth={12}
+          dispersionStrength={0.11}>
+          <TextInput
+            mode="outlined"
+            label="Nombre"
+            value={name}
+            onChangeText={
+              setName
+            }
+            style={styles.input}
+          />
 
-        <TextInput
-          label="Objetivo en segundos"
-          value={
-            targetSeconds
-          }
-          onChangeText={
-            setTargetSeconds
-          }
-          keyboardType="decimal-pad"
-          style={styles.input}
-        />
+          <TextInput
+            mode="outlined"
+            label="Objetivo en segundos"
+            value={
+              targetSeconds
+            }
+            onChangeText={
+              setTargetSeconds
+            }
+            keyboardType="decimal-pad"
+            style={styles.input}
+          />
 
-        <TextInput
-          label="Cantidad de solves"
-          value={
-            targetSolves
-          }
-          onChangeText={
-            setTargetSolves
-          }
-          keyboardType="number-pad"
-          style={styles.input}
-        />
-      </ZaidSurface>
+          <TextInput
+            mode="outlined"
+            label="Cantidad de solves"
+            value={
+              targetSolves
+            }
+            onChangeText={
+              setTargetSolves
+            }
+            keyboardType="number-pad"
+            style={styles.input}
+          />
+        </ZaidSurface>
 
-      <Button
-        mode="contained"
-        disabled={!valid}
-        onPress={() => {
-          void startSession({
-            name:
-              name.trim() ||
-              'Entrenamiento',
-
-            targetTimeMs:
-              Math.round(
-                seconds *
-                  1000,
-              ),
-
-            targetSolves:
-              solves,
-          });
-        }}>
-        Iniciar sesión
-      </Button>
-    </ScrollView>
+        {useGlass ? (
+          <ZaidSurface
+            style={styles.actionGlass}
+            material="clear"
+            cornerRadius={22}
+            refractionHeight={46}
+            bevelWidth={9}
+            dispersionStrength={0.10}>
+            <Button
+              mode="text"
+              disabled={!valid}
+              contentStyle={styles.actionContent}
+              onPress={start}>
+              Iniciar sesión
+            </Button>
+          </ZaidSurface>
+        ) : (
+          <Button
+            mode="contained"
+            disabled={!valid}
+            contentStyle={styles.actionContent}
+            onPress={start}>
+            Iniciar sesión
+          </Button>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles =
-  StyleSheet.create({
-    container: {
-      padding: 24,
-      gap: 16,
-    },
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
 
-    input: {
-      marginTop: 4,
-      backgroundColor: 'transparent',
-    },
+  container: {
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 32,
+    gap: 16,
+  },
 
-    card: {
-      padding: 20,
-      borderRadius: 24,
-      gap: 8,
-    },
+  heading: {
+    fontWeight: '800',
+    letterSpacing: -0.6,
+  },
 
-    formCard: {
-      padding: 16,
-      borderRadius: 26,
-      gap: 10,
-    },
-  });
+  lead: {
+    marginTop: 5,
+    opacity: 0.70,
+    lineHeight: 20,
+  },
+
+  input: {
+    backgroundColor: 'transparent',
+  },
+
+  card: {
+    padding: 20,
+    borderRadius: 28,
+    gap: 14,
+  },
+
+  sessionName: {
+    fontWeight: '800',
+  },
+
+  metrics: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 4,
+  },
+
+  metric: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  metricLabel: {
+    opacity: 0.58,
+    letterSpacing: 1,
+  },
+
+  metricValue: {
+    marginTop: 4,
+    fontWeight: '800',
+  },
+
+  metricDivider: {
+    width: StyleSheet.hairlineWidth,
+    marginHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  },
+
+  formCard: {
+    padding: 14,
+    borderRadius: 28,
+    gap: 10,
+  },
+
+  actionGlass: {
+    borderRadius: 22,
+  },
+
+  actionContent: {
+    minHeight: 50,
+  },
+});
