@@ -4,8 +4,8 @@
 // License, v. 2.0.
 
 import {
-  Card,
   IconButton,
+  Text,
 } from 'react-native-paper';
 
 import {
@@ -17,7 +17,9 @@ import {
 } from '../../../lib/stif/wrappers';
 
 import {
+  Pressable,
   StyleSheet,
+  View,
 } from 'react-native';
 
 import {
@@ -68,72 +70,111 @@ function AttemptCard({
   return (
     <ZaidSurface
       style={styles.glassShell}
+      material="clear"
       cornerRadius={22}
-      refractionHeight={48}
+      refractionHeight={50}
       bevelWidth={10}
-      dispersionStrength={0.10}>
-      <Card
-        style={styles.card}
+      dispersionStrength={0.11}>
+      <Pressable
+        accessibilityRole="button"
         onPress={() =>
           onPress(
             attempt,
           )
-        }>
-        <Card.Title
-          title={
-            getAttemptTimeString(
+        }
+        style={({pressed}) => [
+          styles.content,
+          pressed && styles.pressed,
+        ]}>
+        <View
+          style={styles.topRow}>
+          <Text
+            variant="titleLarge"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={styles.time}>
+            {getAttemptTimeString(
               wrapped,
-            )
-          }
+            )}
+          </Text>
 
-          titleVariant=
-            "titleMedium"
+          <IconButton
+            icon={
+              favorite
+                ? 'star'
+                : 'star-outline'
+            }
+            size={20}
+            style={styles.favorite}
+            accessibilityLabel={
+              favorite
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            }
+            onPress={event => {
+              event.stopPropagation();
+              onToggleFavorite(
+                attempt,
+              );
+            }}
+          />
+        </View>
 
-          subtitle={
-            new Date(
-              wrapped.timerStart(),
-            ).toLocaleDateString()
-          }
-
-          subtitleVariant=
-            "bodySmall"
-
-          right={() => (
-            <IconButton
-              icon={
-                favorite
-                  ? 'star'
-                  : 'star-outline'
-              }
-
-              size={21}
-
-              onPress={() =>
-                onToggleFavorite(
-                  attempt,
-                )
-              }
-            />
-          )}
-        />
-      </Card>
+        <Text
+          variant="bodySmall"
+          numberOfLines={1}
+          style={styles.date}>
+          {new Date(
+            wrapped.timerStart(),
+          ).toLocaleDateString()}
+        </Text>
+      </Pressable>
     </ZaidSurface>
   );
 }
 
-const styles =
-  StyleSheet.create({
-    glassShell: {
-      margin: 10,
-      borderRadius: 22,
-      overflow: 'hidden',
-    },
+const styles = StyleSheet.create({
+  glassShell: {
+    minHeight: 92,
+    margin: 6,
+    borderRadius: 22,
+  },
 
-    card: {
-      margin: 0,
-      backgroundColor: 'transparent',
-    },
-  });
+  content: {
+    flex: 1,
+    minHeight: 92,
+    paddingLeft: 14,
+    paddingRight: 5,
+    paddingVertical: 10,
+    justifyContent: 'center',
+  },
+
+  pressed: {
+    opacity: 0.72,
+  },
+
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 0,
+  },
+
+  time: {
+    flex: 1,
+    minWidth: 0,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+
+  favorite: {
+    margin: 0,
+  },
+
+  date: {
+    opacity: 0.72,
+    marginTop: 3,
+  },
+});
 
 export default memo(
   AttemptCard,
